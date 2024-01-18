@@ -1,0 +1,347 @@
+[gd_scene load_steps=25 format=2]
+
+[ext_resource path="res://ClickableArea.gd" type="Script" id=1]
+[ext_resource path="res://Sprites/Backgrounds/RoomSouth.png" type="Texture" id=2]
+[ext_resource path="res://Sprites/Backgrounds/blankwhite.png" type="Texture" id=3]
+[ext_resource path="res://Sprites/Backgrounds/RoomSouth-Bricks.png" type="Texture" id=4]
+[ext_resource path="res://Sprites/Backgrounds/RoomSouth-Home.png" type="Texture" id=5]
+[ext_resource path="res://Sprites/Objects/MonaLisa.png" type="Texture" id=6]
+[ext_resource path="res://Sprites/Objects/painting-on-floor.png" type="Texture" id=7]
+[ext_resource path="res://Sprites/Backgrounds/RoomSouth-Garden.png" type="Texture" id=8]
+[ext_resource path="res://Sprites/Backgrounds/RoomSouth-Arcade.png" type="Texture" id=9]
+[ext_resource path="res://Sprites/Objects/CD-blue.png" type="Texture" id=10]
+[ext_resource path="res://Sprites/Objects/SafeDoorOpen.png" type="Texture" id=11]
+[ext_resource path="res://Sprites/Objects/SafeDoor.png" type="Texture" id=12]
+[ext_resource path="res://Collectable.gd" type="Script" id=13]
+[ext_resource path="res://Sprites/Objects/MetalDetector.png" type="Texture" id=14]
+[ext_resource path="res://Sprites/Objects/quarter-small.png" type="Texture" id=15]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+func _ready():
+	update_view()
+	$PaintingOnWall.show()
+	$PaintingOnFloor.hide()
+	$SafeOpen.hide()
+	
+	# signal for unlocking safe
+	WorldData.connect(\"safe_unlocked\", self, \"_on_safe_unlocked\")
+
+func _on_Left_clicked():
+	ScreenManager.change_screen(\"res://Screens/RoomEast.tscn\")
+
+func _on_Right_clicked():
+	ScreenManager.change_screen(\"res://Screens/RoomWest.tscn\")
+
+func _on_Floor_clicked():
+	ScreenManager.change_screen(\"res://Screens/Rug.tscn\")
+
+func update_view():
+	match WorldData.house_location:
+		\"home\":
+			$ViewHome.show()
+		\"wall\":
+			$ViewWall.show()
+		\"garden\":
+			$ViewGarden.show()
+		\"arcade\":
+			$ViewArcade.show()
+		\"red\":
+			$ViewColor.modulate = Helpers.RED
+			$ViewColor.show()
+		\"orange\":
+			$ViewColor.modulate = Helpers.ORANGE
+			$ViewColor.show()
+		\"yellow\":
+			$ViewColor.modulate = Helpers.YELLOW
+			$ViewColor.show()
+		\"green\":
+			$ViewColor.modulate = Helpers.GREEN
+			$ViewColor.show()
+		\"blue\":
+			$ViewColor.modulate = Helpers.BLUE
+			$ViewColor.show()
+		\"purple\":
+			$ViewColor.modulate = Helpers.PURPLE
+			$ViewColor.show()
+
+
+func _on_Painting_clicked():
+	if $PaintingOnWall.visible:
+		# remove painting
+		$PaintingOnWall.hide()
+		$PaintingOnFloor.show()
+	else:
+		# enter safe
+		ScreenManager.create_overlay(\"res://Overlays/Safe.tscn\")
+		Notifications.notify(\"Looks like some kind of safe.\")
+
+
+func _on_FloorPainting_clicked():
+	$PaintingOnWall.show()
+	$PaintingOnFloor.hide()
+
+func _on_safe_unlocked():
+	$SafeOpen.show()
+	$PaintingOnFloor.hide()
+
+func _on_SafeDisk_clicked(emitter):
+	Helpers.remove_world_item(emitter)
+	Inventory.add_item('blue-disk')
+
+
+func _on_SafeQuarters_clicked(emitter):
+	Helpers.remove_world_item(emitter)
+	Inventory.add_quarters(3)
+
+
+func _on_SafeDoorOpen2_clicked():
+	$PaintingOnFloor.show()
+	$SafeOpen.hide()
+
+
+func _on_MetalDetector_clicked(emitter):
+	Helpers.remove_world_item(emitter)
+	Inventory.add_item('metal-detector')
+"
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 342, 49 )
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 296, 550 )
+
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 156, 153 )
+
+[sub_resource type="RectangleShape2D" id=7]
+extents = Vector2( 184, 550 )
+
+[sub_resource type="RectangleShape2D" id=8]
+extents = Vector2( 28, 15 )
+
+[sub_resource type="RectangleShape2D" id=9]
+extents = Vector2( 35, 21 )
+
+[sub_resource type="RectangleShape2D" id=10]
+extents = Vector2( 70.5, 173.5 )
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 219.5, 550 )
+
+[node name="Screen" type="Node2D"]
+script = SubResource( 1 )
+
+[node name="ViewHome" type="Sprite" parent="."]
+visible = false
+texture = ExtResource( 5 )
+centered = false
+
+[node name="ViewWall" type="Sprite" parent="."]
+visible = false
+texture = ExtResource( 4 )
+centered = false
+
+[node name="ViewGarden" type="Sprite" parent="."]
+visible = false
+texture = ExtResource( 8 )
+centered = false
+
+[node name="ViewArcade" type="Sprite" parent="."]
+visible = false
+texture = ExtResource( 9 )
+centered = false
+
+[node name="ViewColor" type="Sprite" parent="."]
+visible = false
+texture = ExtResource( 3 )
+centered = false
+
+[node name="BG" type="Sprite" parent="."]
+texture = ExtResource( 2 )
+centered = false
+
+[node name="PaintingOnWall" type="Node2D" parent="."]
+visible = false
+
+[node name="PaintingSprite" type="Sprite" parent="PaintingOnWall"]
+position = Vector2( 982, 475 )
+texture = ExtResource( 6 )
+
+[node name="Floor" type="Area2D" parent="PaintingOnWall"]
+position = Vector2( 958, 1013 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PaintingOnWall/Floor"]
+position = Vector2( 12, 40 )
+shape = SubResource( 4 )
+
+[node name="Left" type="Area2D" parent="PaintingOnWall"]
+position = Vector2( 185, 543 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "left"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PaintingOnWall/Left"]
+position = Vector2( 92, 0 )
+shape = SubResource( 2 )
+
+[node name="Painting" type="Area2D" parent="PaintingOnWall"]
+position = Vector2( 981, 475 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PaintingOnWall/Painting"]
+shape = SubResource( 5 )
+
+[node name="PaintingOnFloor" type="Node2D" parent="."]
+visible = false
+
+[node name="PaintingOnFloorSprite" type="Sprite" parent="PaintingOnFloor"]
+position = Vector2( 350, 851 )
+texture = ExtResource( 7 )
+centered = false
+
+[node name="FloorPainting" type="Area2D" parent="PaintingOnFloor"]
+position = Vector2( 814, 985 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="PaintingOnFloor/FloorPainting"]
+polygon = PoolVector2Array( -221, -86, 94, -84, 84, 100, -416, 100 )
+
+[node name="LeftSmall" type="Area2D" parent="PaintingOnFloor"]
+position = Vector2( 185, 543 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "left"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PaintingOnFloor/LeftSmall"]
+position = Vector2( -20, 0 )
+shape = SubResource( 7 )
+
+[node name="SafeDoorClosed" type="Sprite" parent="PaintingOnFloor"]
+position = Vector2( 821, 321 )
+texture = ExtResource( 12 )
+centered = false
+
+[node name="Safe" type="Area2D" parent="PaintingOnFloor"]
+position = Vector2( 981, 475 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PaintingOnFloor/Safe"]
+shape = SubResource( 5 )
+
+[node name="SafeOpen" type="Node2D" parent="."]
+
+[node name="SafeDoorOpen" type="Sprite" parent="SafeOpen"]
+position = Vector2( 647, 298 )
+texture = ExtResource( 11 )
+centered = false
+
+[node name="MetalDetector" type="Area2D" parent="SafeOpen"]
+position = Vector2( 956, 565 )
+script = ExtResource( 13 )
+__meta__ = {
+"_edit_group_": true
+}
+id = "metal-detector"
+
+[node name="Sprite" type="Sprite" parent="SafeOpen/MetalDetector"]
+texture = ExtResource( 14 )
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="SafeOpen/MetalDetector"]
+polygon = PoolVector2Array( 62, 53, -9, 16, -25, 23, -47, 23, -68, 6, -73, -20, -61, -44, -31, -52, -4, -41, 5, -22, 4, -4, 71, 35 )
+
+[node name="SafeDisk" type="Area2D" parent="SafeOpen"]
+position = Vector2( 900, 609 )
+script = ExtResource( 13 )
+__meta__ = {
+"_edit_group_": true
+}
+id = "safe-disk"
+
+[node name="Sprite" type="Sprite" parent="SafeOpen/SafeDisk"]
+texture = ExtResource( 10 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SafeOpen/SafeDisk"]
+shape = SubResource( 8 )
+
+[node name="SafeQuarters" type="Area2D" parent="SafeOpen"]
+position = Vector2( 1069, 581 )
+script = ExtResource( 13 )
+__meta__ = {
+"_edit_group_": true
+}
+id = "quarter-safe"
+
+[node name="Sprite" type="Sprite" parent="SafeOpen/SafeQuarters"]
+position = Vector2( 18, 14 )
+texture = ExtResource( 15 )
+
+[node name="Sprite2" type="Sprite" parent="SafeOpen/SafeQuarters"]
+position = Vector2( -13, 21 )
+texture = ExtResource( 15 )
+
+[node name="Sprite3" type="Sprite" parent="SafeOpen/SafeQuarters"]
+position = Vector2( 0, 4 )
+texture = ExtResource( 15 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SafeOpen/SafeQuarters"]
+position = Vector2( 3, 13 )
+shape = SubResource( 9 )
+
+[node name="SafeDoorOpen2" type="Area2D" parent="SafeOpen"]
+position = Vector2( 754, 402 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SafeOpen/SafeDoorOpen2"]
+position = Vector2( -29.5, 73.5 )
+shape = SubResource( 10 )
+
+[node name="PaintingOnFloorSprite2" type="Sprite" parent="SafeOpen"]
+position = Vector2( 350, 851 )
+texture = ExtResource( 7 )
+centered = false
+
+[node name="Right" type="Area2D" parent="."]
+position = Vector2( 1732, 543 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "right"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Right"]
+position = Vector2( -15.5, 0 )
+shape = SubResource( 3 )
+
+[connection signal="clicked" from="PaintingOnWall/Floor" to="." method="_on_Floor_clicked"]
+[connection signal="clicked" from="PaintingOnWall/Left" to="." method="_on_Left_clicked"]
+[connection signal="clicked" from="PaintingOnWall/Painting" to="." method="_on_Painting_clicked"]
+[connection signal="clicked" from="PaintingOnFloor/FloorPainting" to="." method="_on_FloorPainting_clicked"]
+[connection signal="clicked" from="PaintingOnFloor/LeftSmall" to="." method="_on_Left_clicked"]
+[connection signal="clicked" from="PaintingOnFloor/Safe" to="." method="_on_Painting_clicked"]
+[connection signal="clicked" from="SafeOpen/MetalDetector" to="." method="_on_MetalDetector_clicked"]
+[connection signal="clicked" from="SafeOpen/SafeDisk" to="." method="_on_SafeDisk_clicked"]
+[connection signal="clicked" from="SafeOpen/SafeQuarters" to="." method="_on_SafeQuarters_clicked"]
+[connection signal="clicked" from="SafeOpen/SafeDoorOpen2" to="." method="_on_SafeDoorOpen2_clicked"]
+[connection signal="clicked" from="Right" to="." method="_on_Right_clicked"]

@@ -1,0 +1,192 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://Collectable.gd" type="Script" id=1]
+[ext_resource path="res://ClickableArea.gd" type="Script" id=2]
+[ext_resource path="res://Sprites/Backgrounds/GardenWest.png" type="Texture" id=3]
+[ext_resource path="res://Sprites/Objects/CD-green_alt.png" type="Texture" id=4]
+[ext_resource path="res://Sprites/Objects/quarter-small.png" type="Texture" id=5]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+func _ready():
+# warning-ignore:return_value_discarded
+	WorldData.connect(\"use_metal_detector\", self, \"_on_metal_detector_used\")
+
+func _on_Back_clicked():
+	ScreenManager.change_screen(\"res://Screens/GardenEast.tscn\")
+
+
+func _on_GreenDisk_clicked(emitter):
+	Helpers.remove_world_item(emitter)
+	Inventory.add_item(\"green-disk\")
+
+
+func _on_DigSpot_clicked():
+	if Inventory.active_item == \"shovel\":
+		if WorldData.has_dug == false:
+			Notifications.notify(\"I found three buried quarters!\")
+			Inventory.add_quarters(3)
+			Inventory.deactivate_item()
+			WorldData.has_dug = true
+		else:
+			Notifications.notify(\"Oh, I found another quarter down there!\")
+			Inventory.add_quarters(1)
+			Inventory.deactivate_item()
+	else:
+		Notifications.notify(\"I could dig here if I had a shovel.\")
+
+
+func _on_Mountains_clicked():
+	Notifications.notify(\"I wish I was skiing right now.\")
+
+
+func _on_Pond_clicked():
+	if Inventory.active_item == 'bucket':
+		Inventory.remove_item('bucket')
+		Inventory.add_item('water-bucket')
+	elif Inventory.active_item == 'water-bucket':
+		Notifications.notify(\"I already have some water.\")
+	else:
+		Notifications.notify(\"This is a nice pond.\")
+
+
+func _on_Collectable_clicked(emitter):
+	if Inventory.active_item == 'sticky-hand':
+		Inventory.add_quarters(1)
+		Helpers.remove_world_item(emitter)
+		Notifications.notify(\"Got it!\")
+	else:
+		Notifications.notify(\"There's a quarter out there, but it's too far away to reach.\")
+
+func _on_metal_detector_used():
+	Notifications.notify(\"No reaction on this side of the garden.\")
+"
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 1001, 87 )
+
+[sub_resource type="RectangleShape2D" id=8]
+extents = Vector2( 103, 480 )
+
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 33, 16 )
+
+[sub_resource type="RectangleShape2D" id=6]
+extents = Vector2( 124, 69 )
+
+[sub_resource type="RectangleShape2D" id=7]
+extents = Vector2( 553, 146.5 )
+
+[sub_resource type="RectangleShape2D" id=9]
+extents = Vector2( 21, 15 )
+
+[node name="Screen" type="Node2D"]
+script = SubResource( 1 )
+
+[node name="BG" type="Sprite" parent="."]
+texture = ExtResource( 3 )
+centered = false
+
+[node name="Back" type="Area2D" parent="."]
+position = Vector2( 958, 1038 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "turnaround"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Back"]
+position = Vector2( 0, 13 )
+shape = SubResource( 4 )
+
+[node name="Back2" type="Area2D" parent="."]
+position = Vector2( 1862, 470 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "turnaround"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Back2"]
+position = Vector2( 0, -12 )
+shape = SubResource( 8 )
+
+[node name="Back3" type="Area2D" parent="."]
+position = Vector2( 88, 470 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "turnaround"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Back3"]
+position = Vector2( 0, -12 )
+shape = SubResource( 8 )
+
+[node name="GreenDisk" type="Area2D" parent="."]
+position = Vector2( 921, 867 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+id = "green-disk"
+
+[node name="Sprite" type="Sprite" parent="GreenDisk"]
+texture = ExtResource( 4 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GreenDisk"]
+shape = SubResource( 5 )
+
+[node name="DigSpot" type="Area2D" parent="."]
+position = Vector2( 1600, 771 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DigSpot"]
+shape = SubResource( 6 )
+
+[node name="Mountains" type="Area2D" parent="."]
+position = Vector2( 962, 335 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Mountains"]
+position = Vector2( 0, 24.5 )
+shape = SubResource( 7 )
+
+[node name="Pond" type="Area2D" parent="."]
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Pond"]
+polygon = PoolVector2Array( 873, 836, 814, 917, 555, 939, 297, 848, 307, 685, 650, 724, 986, 676, 1089, 781, 1021, 879, 955, 829 )
+
+[node name="Collectable" type="Area2D" parent="."]
+position = Vector2( 1080, 583 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+id = "quarter-garden"
+
+[node name="Sprite" type="Sprite" parent="Collectable"]
+texture = ExtResource( 5 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collectable"]
+shape = SubResource( 9 )
+
+[connection signal="clicked" from="Back" to="." method="_on_Back_clicked"]
+[connection signal="clicked" from="Back2" to="." method="_on_Back_clicked"]
+[connection signal="clicked" from="Back3" to="." method="_on_Back_clicked"]
+[connection signal="clicked" from="GreenDisk" to="." method="_on_GreenDisk_clicked"]
+[connection signal="clicked" from="DigSpot" to="." method="_on_DigSpot_clicked"]
+[connection signal="clicked" from="Mountains" to="." method="_on_Mountains_clicked"]
+[connection signal="clicked" from="Pond" to="." method="_on_Pond_clicked"]
+[connection signal="clicked" from="Collectable" to="." method="_on_Collectable_clicked"]

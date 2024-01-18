@@ -1,0 +1,233 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Sprites/Objects/flipper.png" type="Texture" id=1]
+[ext_resource path="res://Sprites/Objects/wheel.png" type="Texture" id=2]
+[ext_resource path="res://Fonts/Comic32.tres" type="DynamicFont" id=3]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends TextureRect
+
+var rot_speed := 0.0
+var deceleration := 0.7 # per second
+var deceleration_gain := 1.0 # per second
+var init_speed := 25
+var init_speed_noise := 2
+
+var stopped = false
+
+var splits = [
+	10.9,
+	41.9,
+	73.3,
+	87.6,
+	134.2,
+	179.6,
+	192.8,
+	222.9,
+	253.1,
+	266.8,
+	313.0,
+	358.0
+]
+
+var prizes = [
+	'25 tickets',
+	'10 tickets',
+	'nothing',
+	'25 tickets',
+	'25 cents back',
+	'5 tickets',
+	'quit',
+	'10 tickets',
+	'nothing',
+	'25 tickets',
+	'25 cents back',
+	'5 tickets',
+	'25 tickets'
+]
+
+func _ready():
+#	randomize()
+	rot_speed = init_speed + rand_range(-init_speed_noise, init_speed_noise)
+	Helpers.disable_input(15)
+
+func _process(delta):
+	if !stopped:
+		rot_speed *= 1 - deceleration * delta
+		
+		if rot_speed <= 0.2:
+			deceleration += deceleration_gain * delta
+		
+		if rot_speed <= 0.006:
+			stopped = true
+			get_prize()
+		
+#		print(rot_speed)
+		$Wheel.rotate(rot_speed * delta)
+
+func get_prize():
+	var prize_id = 0
+	var rotation = fmod($Wheel.rotation_degrees, 360.0)
+	
+	while rotation > splits[prize_id]:
+		prize_id += 1
+		if prize_id == splits.size():
+			break
+	var prize = prizes[prize_id]
+	
+	match prize:
+		'5 tickets':
+			Inventory.add_tickets(5)
+			Notifications.notify(\"Nice!\")
+		'10 tickets':
+			Inventory.add_tickets(10)
+			Notifications.notify(\"Sweet!\")
+		'25 tickets':
+			Inventory.add_tickets(25)
+			Notifications.notify(\"JACKPOT!\")
+		'25 cents back':
+			Inventory.add_quarters(1)
+			Notifications.notify(\"Well, better than nothing.\")
+		'nothing':
+			Notifications.notify(\":(\")
+		'quit':
+			Notifications.notify(\"\\\"Crash Game\\\"? What does that me-\")
+			Helpers.enable_input() # one chance to cheat fate
+			yield(get_tree().create_timer(0.6), 'timeout')
+			get_tree().quit()
+		_:
+			Notifications.notify(\"Uh oh, you broke something. Here's 69 consolation tickets.\")
+			Inventory.add_tickets(69)
+	
+	Helpers.enable_input()
+"
+
+[node name="Wheel" type="TextureRect"]
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 2
+script = SubResource( 1 )
+
+[node name="Wheel" type="Sprite" parent="."]
+position = Vector2( 944.632, 416.594 )
+scale = Vector2( 1, 1.01 )
+texture = ExtResource( 2 )
+offset = Vector2( 0.885376, -0.184418 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Label" type="Label" parent="Wheel"]
+margin_left = -376.633
+margin_top = 13.2766
+margin_right = -210.633
+margin_bottom = 59.2766
+rect_rotation = -6.4
+custom_fonts/font = ExtResource( 3 )
+text = "25 Tickets!"
+
+[node name="Label2" type="Label" parent="Wheel"]
+margin_left = 376.374
+margin_top = -24.5344
+margin_right = 560.374
+margin_bottom = 21.4656
+rect_rotation = 173.0
+custom_fonts/font = ExtResource( 3 )
+text = "Crash Game"
+
+[node name="Label3" type="Label" parent="Wheel"]
+margin_left = -336.6
+margin_top = -156.052
+margin_right = -170.6
+margin_bottom = -110.052
+rect_rotation = 20.9
+custom_fonts/font = ExtResource( 3 )
+text = "5 Tickets!"
+
+[node name="Label4" type="Label" parent="Wheel"]
+margin_left = 342.751
+margin_top = 152.153
+margin_right = 508.751
+margin_bottom = 198.153
+rect_rotation = 198.6
+custom_fonts/font = ExtResource( 3 )
+text = "5 Tickets!"
+
+[node name="Label5" type="Label" parent="Wheel"]
+margin_left = -109.505
+margin_top = -354.412
+margin_right = 110.495
+margin_bottom = -308.412
+rect_rotation = 69.9
+custom_fonts/font = ExtResource( 3 )
+text = "25 cents back"
+
+[node name="Label6" type="Label" parent="Wheel"]
+margin_left = 116.298
+margin_top = 354.936
+margin_right = 336.298
+margin_bottom = 400.936
+rect_rotation = 249.9
+custom_fonts/font = ExtResource( 3 )
+text = "25 cents back"
+
+[node name="Label7" type="Label" parent="Wheel"]
+margin_left = 74.3387
+margin_top = -365.824
+margin_right = 294.339
+margin_bottom = -319.824
+rect_rotation = 97.8
+custom_fonts/font = ExtResource( 3 )
+text = "25 Tickets!"
+
+[node name="Label8" type="Label" parent="Wheel"]
+margin_left = -70.6102
+margin_top = 361.861
+margin_right = 149.39
+margin_bottom = 407.861
+rect_rotation = 277.8
+custom_fonts/font = ExtResource( 3 )
+text = "25 Tickets!"
+
+[node name="Label9" type="Label" parent="Wheel"]
+margin_left = -211.549
+margin_top = 296.462
+margin_right = 8.4505
+margin_bottom = 342.462
+rect_rotation = 301.5
+custom_fonts/font = ExtResource( 3 )
+text = "Nothing :("
+
+[node name="Label10" type="Label" parent="Wheel"]
+margin_left = 210.537
+margin_top = -305.73
+margin_right = 430.537
+margin_bottom = -259.73
+rect_rotation = 121.5
+custom_fonts/font = ExtResource( 3 )
+text = "Nothing :("
+
+[node name="Label11" type="Label" parent="Wheel"]
+margin_left = -342.039
+margin_top = 157.503
+margin_right = -122.039
+margin_bottom = 203.503
+rect_rotation = 331.9
+custom_fonts/font = ExtResource( 3 )
+text = "10 Tickets!"
+
+[node name="Label12" type="Label" parent="Wheel"]
+margin_left = 337.546
+margin_top = -158.883
+margin_right = 557.546
+margin_bottom = -112.883
+rect_rotation = 151.9
+custom_fonts/font = ExtResource( 3 )
+text = "10 Tickets!"
+
+[node name="Flipper" type="Sprite" parent="."]
+position = Vector2( 513.739, 428.659 )
+texture = ExtResource( 1 )
+__meta__ = {
+"_edit_lock_": true
+}

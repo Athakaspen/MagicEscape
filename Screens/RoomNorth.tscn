@@ -1,0 +1,268 @@
+[gd_scene load_steps=20 format=2]
+
+[ext_resource path="res://ClickableArea.gd" type="Script" id=1]
+[ext_resource path="res://Sprites/Backgrounds/RoomNorth.png" type="Texture" id=2]
+[ext_resource path="res://Sprites/Backgrounds/blankwhite.png" type="Texture" id=3]
+[ext_resource path="res://Sprites/Backgrounds/RoomNorth-Bricks.png" type="Texture" id=4]
+[ext_resource path="res://Sprites/Backgrounds/RoomNorth-Home.png" type="Texture" id=5]
+[ext_resource path="res://Sprites/Backgrounds/RoomNorth-Garden.png" type="Texture" id=6]
+[ext_resource path="res://Sprites/Backgrounds/RoomNorth-Arcade.png" type="Texture" id=7]
+[ext_resource path="res://Sprites/Objects/Vent.png" type="Texture" id=8]
+[ext_resource path="res://Collectable.gd" type="Script" id=9]
+[ext_resource path="res://Sprites/Objects/quarter-small.png" type="Texture" id=10]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+func _ready():
+	update_view()
+
+func _on_Left_clicked():
+	ScreenManager.change_screen(\"res://Screens/RoomWest.tscn\")
+
+
+func _on_Right_clicked():
+	ScreenManager.change_screen(\"res://Screens/RoomEast.tscn\")
+
+
+func _on_Floor_clicked():
+	ScreenManager.change_screen(\"res://Screens/Rug.tscn\")
+
+func update_view():
+	match WorldData.house_location:
+		\"home\":
+			$ViewHome.show()
+		\"wall\":
+			$ViewWall.show()
+		\"garden\":
+			$ViewGarden.show()
+		\"arcade\":
+			$ViewArcade.show()
+		\"red\":
+			$ViewColor.modulate = Helpers.RED
+			$ViewColor.show()
+		\"orange\":
+			$ViewColor.modulate = Helpers.ORANGE
+			$ViewColor.show()
+		\"yellow\":
+			$ViewColor.modulate = Helpers.YELLOW
+			$ViewColor.show()
+		\"green\":
+			$ViewColor.modulate = Helpers.GREEN
+			$ViewColor.show()
+		\"blue\":
+			$ViewColor.modulate = Helpers.BLUE
+			$ViewColor.show()
+		\"purple\":
+			$ViewColor.modulate = Helpers.PURPLE
+			$ViewColor.show()
+
+
+func _on_PC_clicked():
+	if Inventory.active_item in [\"rainbow-disk\", \"red-disk\", \"orange-disk\", \"yellow-disk\", \"green-disk\", \"blue-disk\", \"purple-disk\"]:
+		# put it in
+		if Inventory.active_item == \"rainbow-disk\":
+			if \"rainbow-disk\" in WorldData.saved_disks:
+				Notifications.notify(\"I already loaded this disk onto the PC.\")
+				return
+			else:
+				# rainbow disk, don't delete
+				WorldData.saved_disks.push_back('rainbow-disk')
+				ScreenManager.change_screen(\"res://Screens/Monitor.tscn\")
+		else:
+			# normal disk, delete from Inventory
+			WorldData.saved_disks.push_back(Inventory.active_item)
+			Inventory.remove_item(Inventory.active_item)
+			ScreenManager.change_screen(\"res://Screens/Monitor.tscn\")
+	else:
+		Notifications.notify(\"I could put a CD in here to see what's on it.\")
+
+
+func _on_Monitor_clicked():
+	ScreenManager.change_screen(\"res://Screens/Monitor.tscn\")
+
+
+func _on_Vent_clicked():
+	if Inventory.active_item == \"screwdriver\":
+		Inventory.remove_item(\"screwdriver\")
+		Inventory.add_quarters(2)
+		Notifications.notify(\"There were some quarters behind the vent!\")
+		$VentClosed.hide()
+		$VentOpen.show()
+		$Vent.hide()
+	else:
+		Notifications.notify(\"I might be able to open this up with a screwdriver.\")
+
+
+func _on_Clock_clicked():
+	Notifications.notify(\"I need to get out of here before mom notices I'm gone!\")
+
+
+func _on_DeskQuarter_clicked(emitter):
+	Helpers.remove_world_item(emitter)
+	Inventory.add_quarters(1)
+	Notifications.notify(\"I found a quarter!\")
+"
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 223, 550 )
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 216.5, 550 )
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 356, 49 )
+
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 47, 100 )
+
+[sub_resource type="RectangleShape2D" id=6]
+extents = Vector2( 100, 66 )
+
+[sub_resource type="RectangleShape2D" id=7]
+extents = Vector2( 61, 28 )
+
+[sub_resource type="CircleShape2D" id=8]
+radius = 55.0
+
+[sub_resource type="RectangleShape2D" id=9]
+extents = Vector2( 20, 13 )
+
+[node name="Screen" type="Node2D"]
+script = SubResource( 1 )
+
+[node name="ViewHome" type="Sprite" parent="."]
+visible = false
+texture = ExtResource( 5 )
+centered = false
+
+[node name="ViewWall" type="Sprite" parent="."]
+visible = false
+texture = ExtResource( 4 )
+centered = false
+
+[node name="ViewGarden" type="Sprite" parent="."]
+visible = false
+texture = ExtResource( 6 )
+centered = false
+
+[node name="ViewArcade" type="Sprite" parent="."]
+visible = false
+texture = ExtResource( 7 )
+centered = false
+
+[node name="ViewColor" type="Sprite" parent="."]
+visible = false
+texture = ExtResource( 3 )
+centered = false
+
+[node name="BG" type="Sprite" parent="."]
+texture = ExtResource( 2 )
+centered = false
+
+[node name="Left" type="Area2D" parent="."]
+position = Vector2( 185, 543 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "left"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Left"]
+position = Vector2( 19, 0 )
+shape = SubResource( 2 )
+
+[node name="Right" type="Area2D" parent="."]
+position = Vector2( 1732, 543 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "right"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Right"]
+position = Vector2( -12.5, 0 )
+shape = SubResource( 3 )
+
+[node name="Floor" type="Area2D" parent="."]
+position = Vector2( 958, 1013 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+position = Vector2( -2, 40 )
+shape = SubResource( 4 )
+
+[node name="PC" type="Area2D" parent="."]
+position = Vector2( 822, 543 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PC"]
+shape = SubResource( 5 )
+
+[node name="Monitor" type="Area2D" parent="."]
+position = Vector2( 1019, 542 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Monitor"]
+shape = SubResource( 6 )
+
+[node name="Vent" type="Area2D" parent="."]
+position = Vector2( 1393, 829 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Vent"]
+shape = SubResource( 7 )
+
+[node name="Clock" type="Area2D" parent="."]
+position = Vector2( 1331, 278 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Clock"]
+shape = SubResource( 8 )
+
+[node name="VentClosed" type="Sprite" parent="."]
+position = Vector2( 1393, 826 )
+texture = ExtResource( 8 )
+
+[node name="VentOpen" type="Sprite" parent="."]
+visible = false
+position = Vector2( 1230, 877 )
+texture = ExtResource( 8 )
+
+[node name="DeskQuarter" type="Area2D" parent="."]
+position = Vector2( 952, 635 )
+script = ExtResource( 9 )
+__meta__ = {
+"_edit_group_": true
+}
+id = "quarter-desk"
+
+[node name="Sprite" type="Sprite" parent="DeskQuarter"]
+texture = ExtResource( 10 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeskQuarter"]
+shape = SubResource( 9 )
+
+[connection signal="clicked" from="Left" to="." method="_on_Left_clicked"]
+[connection signal="clicked" from="Right" to="." method="_on_Right_clicked"]
+[connection signal="clicked" from="Floor" to="." method="_on_Floor_clicked"]
+[connection signal="clicked" from="PC" to="." method="_on_PC_clicked"]
+[connection signal="clicked" from="Monitor" to="." method="_on_Monitor_clicked"]
+[connection signal="clicked" from="Vent" to="." method="_on_Vent_clicked"]
+[connection signal="clicked" from="Clock" to="." method="_on_Clock_clicked"]
+[connection signal="clicked" from="DeskQuarter" to="." method="_on_DeskQuarter_clicked"]

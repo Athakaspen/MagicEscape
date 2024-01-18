@@ -1,0 +1,214 @@
+[gd_scene load_steps=17 format=2]
+
+[ext_resource path="res://Collectable.gd" type="Script" id=1]
+[ext_resource path="res://ClickableArea.gd" type="Script" id=2]
+[ext_resource path="res://Sprites/Backgrounds/GardenEast.png" type="Texture" id=3]
+[ext_resource path="res://Sprites/Objects/CD-orange.png" type="Texture" id=4]
+[ext_resource path="res://Sprites/Objects/OpenDoor.png" type="Texture" id=5]
+[ext_resource path="res://Sprites/Objects/bucket.png" type="Texture" id=6]
+[ext_resource path="res://Sprites/Objects/white-circle.png" type="Texture" id=7]
+[ext_resource path="res://Sprites/Objects/dirtpile.png" type="Texture" id=8]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+var front_door_open := false
+
+func _ready():
+# warning-ignore:return_value_discarded
+	WorldData.connect(\"use_metal_detector\", self, \"_on_metal_detector_used\")
+	$dirtpile.visible = WorldData.has_dug_sledge
+
+func _on_Back_clicked():
+	ScreenManager.change_screen(\"res://Screens/GardenWest.tscn\")
+
+func _on_Door_clicked():
+	if front_door_open:
+		ScreenManager.change_screen(\"res://Screens/RoomEast.tscn\")
+	else:
+		front_door_open = true
+		$OpenDoor.visible = true
+		$Door.hover_cursor = \"forward\"
+		MouseHelper.set_cursor(\"forward\")
+
+
+func _on_Flowers_clicked():
+	Notifications.notify(\"These flowers are pretty. Whoever drew them must be a master artist.\")
+
+
+func _on_OrangeDisk_clicked(emitter):
+	if Inventory.active_item == 'sticky-hand':
+		Inventory.add_item(\"orange-disk\")
+		Helpers.remove_world_item(emitter)
+		Notifications.notify(\"Got it!\")
+	else:
+		Notifications.notify(\"There's a disk out there, but it's too far away to reach.\")
+
+
+func _on_Bucket_clicked(emitter):
+	Helpers.remove_world_item(emitter)
+	Inventory.add_item('bucket')
+
+func _on_metal_detector_used():
+	if get_node_or_null(\"Sledgehammer\"):
+		$Sledgehammer.show()
+		Notifications.notify(\"It sounds like the metal detector found something!\")
+
+func _on_Sledgehammer_clicked(emitter):
+	if Inventory.active_item == 'shovel':
+		Helpers.remove_world_item(emitter)
+		Inventory.add_item(\"sledgehammer\")
+		Notifications.notify(\"There was a sledgehammer buried down there.\")
+		WorldData.has_dug_sledge = true
+		$dirtpile.show()
+	else:
+		Notifications.notify(\"I need a shovel to dig here.\")
+"
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 1001, 84.5 )
+
+[sub_resource type="RectangleShape2D" id=9]
+extents = Vector2( 85, 476.5 )
+
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 134, 262 )
+
+[sub_resource type="RectangleShape2D" id=6]
+extents = Vector2( 196, 100 )
+
+[sub_resource type="RectangleShape2D" id=7]
+extents = Vector2( 34, 23 )
+
+[sub_resource type="RectangleShape2D" id=8]
+extents = Vector2( 49, 46 )
+
+[sub_resource type="RectangleShape2D" id=10]
+extents = Vector2( 100, 46 )
+
+[node name="Screen" type="Node2D"]
+script = SubResource( 1 )
+
+[node name="BG" type="Sprite" parent="."]
+texture = ExtResource( 3 )
+centered = false
+
+[node name="OpenDoor" type="Sprite" parent="."]
+visible = false
+position = Vector2( 1213, 561 )
+texture = ExtResource( 5 )
+
+[node name="dirtpile" type="Sprite" parent="."]
+visible = false
+position = Vector2( 788, 898 )
+texture = ExtResource( 8 )
+
+[node name="Back" type="Area2D" parent="."]
+position = Vector2( 960, 1037 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "turnaround"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Back"]
+position = Vector2( 0, 15.5 )
+shape = SubResource( 4 )
+
+[node name="Back2" type="Area2D" parent="."]
+position = Vector2( 1823, 334 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "turnaround"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Back2"]
+position = Vector2( 28, 133.5 )
+shape = SubResource( 9 )
+
+[node name="Back3" type="Area2D" parent="."]
+position = Vector2( 33, 334 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "turnaround"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Back3"]
+position = Vector2( 28, 133.5 )
+shape = SubResource( 9 )
+
+[node name="Door" type="Area2D" parent="."]
+position = Vector2( 1214, 564 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Door"]
+shape = SubResource( 5 )
+
+[node name="Flowers" type="Area2D" parent="."]
+position = Vector2( 797, 532 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Flowers"]
+shape = SubResource( 6 )
+
+[node name="OrangeDisk" type="Area2D" parent="."]
+position = Vector2( 239, 668 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+id = "orange-disk"
+
+[node name="Sprite" type="Sprite" parent="OrangeDisk"]
+texture = ExtResource( 4 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="OrangeDisk"]
+shape = SubResource( 7 )
+
+[node name="Bucket" type="Area2D" parent="."]
+position = Vector2( 1679, 893 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+id = "bucket"
+
+[node name="Sprite" type="Sprite" parent="Bucket"]
+texture = ExtResource( 6 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bucket"]
+shape = SubResource( 8 )
+
+[node name="Sledgehammer" type="Area2D" parent="."]
+visible = false
+position = Vector2( 789, 894 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+id = "sledgehammer"
+
+[node name="Sprite" type="Sprite" parent="Sledgehammer"]
+modulate = Color( 0.937255, 0.101961, 0.101961, 0.329412 )
+scale = Vector2( 3.28125, 1.5625 )
+texture = ExtResource( 7 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sledgehammer"]
+shape = SubResource( 10 )
+
+[connection signal="clicked" from="Back" to="." method="_on_Back_clicked"]
+[connection signal="clicked" from="Back2" to="." method="_on_Back_clicked"]
+[connection signal="clicked" from="Back3" to="." method="_on_Back_clicked"]
+[connection signal="clicked" from="Door" to="." method="_on_Door_clicked"]
+[connection signal="clicked" from="Flowers" to="." method="_on_Flowers_clicked"]
+[connection signal="clicked" from="OrangeDisk" to="." method="_on_OrangeDisk_clicked"]
+[connection signal="clicked" from="Bucket" to="." method="_on_Bucket_clicked"]
+[connection signal="clicked" from="Sledgehammer" to="." method="_on_Sledgehammer_clicked"]

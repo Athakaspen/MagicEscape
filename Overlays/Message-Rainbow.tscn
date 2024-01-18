@@ -1,0 +1,635 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://Sprites/Overlays/pc-window.png" type="Texture" id=1]
+[ext_resource path="res://Fonts/Comic32.tres" type="DynamicFont" id=2]
+[ext_resource path="res://Fonts/Comic64.tres" type="DynamicFont" id=3]
+[ext_resource path="res://Fonts/Comic96.tres" type="DynamicFont" id=4]
+[ext_resource path="res://Sprites/Objects/passcode-arrow.png" type="Texture" id=5]
+[ext_resource path="res://Sprites/Objects/fRED.png" type="Texture" id=6]
+[ext_resource path="res://Sprites/Objects/tim-beeg-trans.png" type="Texture" id=7]
+[ext_resource path="res://Sprites/Objects/EC_kevin.png" type="Texture" id=8]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends TextureRect
+
+var Alphabet = \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\"
+var solution = \"STAPLE\"
+
+
+func _ready():
+	# for x button
+	MouseHelper.set_cursor('examine', CURSOR_FORBIDDEN)
+	# up and down
+	MouseHelper.set_cursor('up', Input.CURSOR_CROSS)
+	MouseHelper.set_cursor('down', Input.CURSOR_HSIZE)
+	
+	if WorldData.has_decrypted_disk:
+		$Encryption.hide()
+
+func check_solution():
+	if  $Encryption/C1.text == solution[0]\\
+	and $Encryption/C2.text == solution[1]\\
+	and $Encryption/C3.text == solution[2]\\
+	and $Encryption/C4.text == solution[3]\\
+	and $Encryption/C5.text == solution[4]\\
+	and $Encryption/C6.text == solution[5]:
+		$Encryption.hide()
+		WorldData.has_decrypted_disk = true
+	
+	# easter eggs
+	if  $Encryption/C1.text == 'F'\\
+	and $Encryption/C2.text == 'R'\\
+	and $Encryption/C3.text == 'E'\\
+	and $Encryption/C4.text == 'D':
+		$fRED.show()
+	
+	if  $Encryption/C1.text == 'T'\\
+	and $Encryption/C2.text == 'I'\\
+	and $Encryption/C3.text == 'M':
+		$Encryption/Tim.show()
+	
+	if  $Encryption/C1.text == 'K'\\
+	and $Encryption/C2.text == 'E'\\
+	and $Encryption/C3.text == 'V'\\
+	and $Encryption/C4.text == 'I'\\
+	and $Encryption/C5.text == 'N':
+		$Encryption/Kevin.show()
+	
+
+func _on_TextureButton_pressed():
+	# X button
+	get_parent().queue_free()
+
+func _on_ForgotPass_pressed():
+	$HintConfirm.show()
+
+func _on_No_pressed():
+	$HintConfirm.hide()
+
+func _on_Yes_pressed():
+	$HintConfirm.hide()
+	$Hint.show()
+
+func _on_Back_pressed():
+	$Hint.hide()
+
+func _on_C1Up_pressed():
+	var cur_id = Alphabet.find($Encryption/C1.text)
+	cur_id += 1
+	if cur_id == 26: cur_id = 0
+	$Encryption/C1.text = Alphabet[cur_id]
+	check_solution()
+
+func _on_C1Down_pressed():
+	var cur_id = Alphabet.find($Encryption/C1.text)
+	cur_id -= 1
+	if cur_id == -1: cur_id = 25
+	$Encryption/C1.text = Alphabet[cur_id]
+	check_solution()
+
+func _on_C2Up_pressed():
+	var cur_id = Alphabet.find($Encryption/C2.text)
+	cur_id += 1
+	if cur_id == 26: cur_id = 0
+	$Encryption/C2.text = Alphabet[cur_id]
+	check_solution()
+
+func _on_C2Down_pressed():
+	var cur_id = Alphabet.find($Encryption/C2.text)
+	cur_id -= 1
+	if cur_id == -1: cur_id = 25
+	$Encryption/C2.text = Alphabet[cur_id]
+	check_solution()
+
+func _on_C3Up_pressed():
+	var cur_id = Alphabet.find($Encryption/C3.text)
+	cur_id += 1
+	if cur_id == 26: cur_id = 0
+	$Encryption/C3.text = Alphabet[cur_id]
+	check_solution()
+
+func _on_C3Down_pressed():
+	var cur_id = Alphabet.find($Encryption/C3.text)
+	cur_id -= 1
+	if cur_id == -1: cur_id = 25
+	$Encryption/C3.text = Alphabet[cur_id]
+	check_solution()
+
+func _on_C4Up_pressed():
+	var cur_id = Alphabet.find($Encryption/C4.text)
+	cur_id += 1
+	if cur_id == 26: cur_id = 0
+	$Encryption/C4.text = Alphabet[cur_id]
+	check_solution()
+
+func _on_C4Down_pressed():
+	var cur_id = Alphabet.find($Encryption/C4.text)
+	cur_id -= 1
+	if cur_id == -1: cur_id = 25
+	$Encryption/C4.text = Alphabet[cur_id]
+	check_solution()
+
+func _on_C5Up_pressed():
+	var cur_id = Alphabet.find($Encryption/C5.text)
+	cur_id += 1
+	if cur_id == 26: cur_id = 0
+	$Encryption/C5.text = Alphabet[cur_id]
+	check_solution()
+
+func _on_C5Down_pressed():
+	var cur_id = Alphabet.find($Encryption/C5.text)
+	cur_id -= 1
+	if cur_id == -1: cur_id = 25
+	$Encryption/C5.text = Alphabet[cur_id]
+	check_solution()
+
+func _on_C6Up_pressed():
+	var cur_id = Alphabet.find($Encryption/C6.text)
+	cur_id += 1
+	if cur_id == 26: cur_id = 0
+	$Encryption/C6.text = Alphabet[cur_id]
+	check_solution()
+
+func _on_C6Down_pressed():
+	var cur_id = Alphabet.find($Encryption/C6.text)
+	cur_id -= 1
+	if cur_id == -1: cur_id = 25
+	$Encryption/C6.text = Alphabet[cur_id]
+	check_solution()
+"
+
+[sub_resource type="Animation" id=2]
+resource_name = "color-rotate"
+length = 6.0
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Message:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1, 2, 3, 4, 5, 6 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 0.929412, 0.109804, 0.141176, 1 ), Color( 1, 0.498039, 0.152941, 1 ), Color( 0.886275, 0.811765, 0, 1 ), Color( 0.133333, 0.694118, 0.298039, 1 ), Color( 0, 0.635294, 0.909804, 1 ), Color( 0.639216, 0.286275, 0.643137, 1 ), Color( 0.929412, 0.109804, 0.141176, 1 ) ]
+}
+
+[node name="Image" type="TextureRect"]
+margin_left = 501.0
+margin_top = 204.0
+margin_right = 1405.0
+margin_bottom = 689.0
+mouse_filter = 2
+texture = ExtResource( 1 )
+script = SubResource( 1 )
+
+[node name="Message" type="Control" parent="."]
+modulate = Color( 0.929412, 0.109804, 0.141176, 1 )
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="Body" type="Label" parent="Message"]
+margin_left = 48.0
+margin_top = 114.0
+margin_right = 854.0
+margin_bottom = 446.0
+custom_constants/line_spacing = 0
+custom_fonts/font = ExtResource( 2 )
+text = "   ongratulations! You found all my hidden disks! With this, you're almost home. There's just one last puzzle left to solve. Put this disk into the dial under the rug, and enter the right combination to return my house to its original location. The total number of letters on ALL of my house's doormats will be your final key. Thanks for playing!"
+align = 3
+autowrap = true
+
+[node name="FirstLetter" type="Label" parent="Message"]
+margin_left = 30.0
+margin_top = 65.0
+margin_right = 90.0
+margin_bottom = 170.0
+custom_constants/line_spacing = 0
+custom_fonts/font = ExtResource( 3 )
+text = "C"
+align = 2
+valign = 2
+autowrap = true
+
+[node name="Line2D" type="Line2D" parent="Message"]
+position = Vector2( 516, 249 )
+points = PoolVector2Array( 0, 0, 133, 0 )
+width = 5.0
+default_color = Color( 1, 1, 1, 1 )
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="Line2D2" type="Line2D" parent="Message"]
+position = Vector2( 48, 296 )
+points = PoolVector2Array( 0, 0, 219, 0 )
+width = 5.0
+default_color = Color( 1, 1, 1, 1 )
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="Line2D3" type="Line2D" parent="Message"]
+position = Vector2( 396, 388 )
+points = PoolVector2Array( 0, 0, 455, 0 )
+width = 5.0
+default_color = Color( 1, 1, 1, 1 )
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="Line2D4" type="Line2D" parent="Message"]
+position = Vector2( 48, 388 )
+points = PoolVector2Array( 0, 0, 279, 0 )
+width = 5.0
+default_color = Color( 1, 1, 1, 1 )
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="AnimationPlayer2" type="AnimationPlayer" parent="."]
+autoplay = "color-rotate"
+anims/color-rotate = SubResource( 2 )
+
+[node name="Encryption" type="TextureRect" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+texture = ExtResource( 1 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Notice" type="Label" parent="Encryption"]
+modulate = Color( 0, 0, 0, 1 )
+margin_left = 26.0
+margin_top = 79.0
+margin_right = 881.0
+margin_bottom = 177.0
+custom_constants/line_spacing = 0
+custom_fonts/font = ExtResource( 2 )
+text = "This file is encrypted.
+Please enter passcode to access:"
+align = 1
+autowrap = true
+
+[node name="C1" type="Label" parent="Encryption"]
+modulate = Color( 0, 0, 0, 1 )
+margin_left = 122.0
+margin_top = 213.0
+margin_right = 258.0
+margin_bottom = 347.0
+custom_constants/line_spacing = 0
+custom_fonts/font = ExtResource( 4 )
+text = "A"
+align = 1
+autowrap = true
+
+[node name="C2" type="Label" parent="Encryption"]
+modulate = Color( 0, 0, 0, 1 )
+margin_left = 226.0
+margin_top = 213.0
+margin_right = 362.0
+margin_bottom = 347.0
+custom_constants/line_spacing = 0
+custom_fonts/font = ExtResource( 4 )
+text = "A"
+align = 1
+autowrap = true
+
+[node name="C3" type="Label" parent="Encryption"]
+modulate = Color( 0, 0, 0, 1 )
+margin_left = 325.0
+margin_top = 213.0
+margin_right = 471.0
+margin_bottom = 347.0
+custom_constants/line_spacing = 0
+custom_fonts/font = ExtResource( 4 )
+text = "A"
+align = 1
+autowrap = true
+
+[node name="C4" type="Label" parent="Encryption"]
+modulate = Color( 0, 0, 0, 1 )
+margin_left = 431.0
+margin_top = 213.0
+margin_right = 575.0
+margin_bottom = 347.0
+custom_constants/line_spacing = 0
+custom_fonts/font = ExtResource( 4 )
+text = "A"
+align = 1
+autowrap = true
+
+[node name="C5" type="Label" parent="Encryption"]
+modulate = Color( 0, 0, 0, 1 )
+margin_left = 536.0
+margin_top = 213.0
+margin_right = 678.0
+margin_bottom = 347.0
+custom_constants/line_spacing = 0
+custom_fonts/font = ExtResource( 4 )
+text = "A"
+align = 1
+autowrap = true
+
+[node name="C6" type="Label" parent="Encryption"]
+modulate = Color( 0, 0, 0, 1 )
+margin_left = 640.0
+margin_top = 213.0
+margin_right = 786.0
+margin_bottom = 347.0
+custom_constants/line_spacing = 0
+custom_fonts/font = ExtResource( 4 )
+text = "A"
+align = 1
+autowrap = true
+
+[node name="C1Down" type="TextureButton" parent="Encryption"]
+margin_left = 147.0
+margin_top = 324.0
+margin_right = 235.0
+margin_bottom = 385.0
+mouse_default_cursor_shape = 10
+texture_normal = ExtResource( 5 )
+
+[node name="C1Up" type="TextureButton" parent="Encryption"]
+margin_left = 147.0
+margin_top = 246.0
+margin_right = 235.0
+margin_bottom = 307.0
+rect_scale = Vector2( 1, -1 )
+mouse_default_cursor_shape = 3
+texture_normal = ExtResource( 5 )
+
+[node name="C2Down" type="TextureButton" parent="Encryption"]
+margin_left = 250.0
+margin_top = 324.0
+margin_right = 338.0
+margin_bottom = 385.0
+mouse_default_cursor_shape = 10
+texture_normal = ExtResource( 5 )
+
+[node name="C2Up" type="TextureButton" parent="Encryption"]
+margin_left = 250.0
+margin_top = 246.0
+margin_right = 338.0
+margin_bottom = 307.0
+rect_scale = Vector2( 1, -1 )
+mouse_default_cursor_shape = 3
+texture_normal = ExtResource( 5 )
+
+[node name="C3Down" type="TextureButton" parent="Encryption"]
+margin_left = 354.0
+margin_top = 324.0
+margin_right = 442.0
+margin_bottom = 385.0
+mouse_default_cursor_shape = 10
+texture_normal = ExtResource( 5 )
+
+[node name="C3Up" type="TextureButton" parent="Encryption"]
+margin_left = 354.0
+margin_top = 246.0
+margin_right = 442.0
+margin_bottom = 307.0
+rect_scale = Vector2( 1, -1 )
+mouse_default_cursor_shape = 3
+texture_normal = ExtResource( 5 )
+
+[node name="C4Down" type="TextureButton" parent="Encryption"]
+margin_left = 457.0
+margin_top = 324.0
+margin_right = 545.0
+margin_bottom = 385.0
+mouse_default_cursor_shape = 10
+texture_normal = ExtResource( 5 )
+
+[node name="C4Up" type="TextureButton" parent="Encryption"]
+margin_left = 457.0
+margin_top = 246.0
+margin_right = 545.0
+margin_bottom = 307.0
+rect_scale = Vector2( 1, -1 )
+mouse_default_cursor_shape = 3
+texture_normal = ExtResource( 5 )
+
+[node name="C5Down" type="TextureButton" parent="Encryption"]
+margin_left = 564.0
+margin_top = 324.0
+margin_right = 652.0
+margin_bottom = 385.0
+mouse_default_cursor_shape = 10
+texture_normal = ExtResource( 5 )
+
+[node name="C5Up" type="TextureButton" parent="Encryption"]
+margin_left = 564.0
+margin_top = 246.0
+margin_right = 652.0
+margin_bottom = 307.0
+rect_scale = Vector2( 1, -1 )
+mouse_default_cursor_shape = 3
+texture_normal = ExtResource( 5 )
+
+[node name="C6Down" type="TextureButton" parent="Encryption"]
+margin_left = 667.0
+margin_top = 324.0
+margin_right = 755.0
+margin_bottom = 385.0
+mouse_default_cursor_shape = 10
+texture_normal = ExtResource( 5 )
+
+[node name="C6Up" type="TextureButton" parent="Encryption"]
+margin_left = 667.0
+margin_top = 246.0
+margin_right = 755.0
+margin_bottom = 307.0
+rect_scale = Vector2( 1, -1 )
+mouse_default_cursor_shape = 3
+texture_normal = ExtResource( 5 )
+
+[node name="ForgotPass" type="Label" parent="Encryption"]
+modulate = Color( 0, 0.529412, 1, 1 )
+margin_left = 267.0
+margin_top = 399.0
+margin_right = 642.0
+margin_bottom = 451.0
+custom_constants/line_spacing = 0
+custom_fonts/font = ExtResource( 2 )
+text = "I forgot my password"
+align = 1
+autowrap = true
+
+[node name="ForgotPass" type="TextureButton" parent="Encryption/ForgotPass"]
+margin_top = 2.0
+margin_right = 372.0
+margin_bottom = 55.0
+mouse_default_cursor_shape = 8
+
+[node name="Tim" type="TextureRect" parent="Encryption"]
+visible = false
+margin_left = 45.0
+margin_top = 94.0
+margin_right = 148.0
+margin_bottom = 197.0
+texture = ExtResource( 7 )
+expand = true
+
+[node name="Kevin" type="TextureRect" parent="Encryption"]
+visible = false
+modulate = Color( 0.886275, 0.886275, 0.886275, 1 )
+margin_left = 761.0
+margin_top = 95.0
+margin_right = 864.0
+margin_bottom = 198.0
+texture = ExtResource( 8 )
+expand = true
+
+[node name="HintConfirm" type="TextureRect" parent="."]
+visible = false
+margin_right = 40.0
+margin_bottom = 40.0
+texture = ExtResource( 1 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Notice" type="Label" parent="HintConfirm"]
+modulate = Color( 0, 0, 0, 1 )
+margin_left = 26.0
+margin_top = 121.0
+margin_right = 881.0
+margin_bottom = 177.0
+custom_constants/line_spacing = 0
+custom_fonts/font = ExtResource( 2 )
+text = "Are you sure you want to see a password hint?"
+align = 1
+autowrap = true
+
+[node name="NoLabel" type="Label" parent="HintConfirm"]
+modulate = Color( 0, 0, 0, 1 )
+margin_left = 220.0
+margin_top = 287.0
+margin_right = 387.0
+margin_bottom = 377.0
+custom_constants/line_spacing = 0
+custom_fonts/font = ExtResource( 3 )
+text = "No"
+align = 1
+autowrap = true
+
+[node name="No" type="TextureButton" parent="HintConfirm/NoLabel"]
+margin_left = 26.0
+margin_top = 4.0
+margin_right = 141.0
+margin_bottom = 88.0
+mouse_default_cursor_shape = 8
+
+[node name="YesLabel" type="Label" parent="HintConfirm"]
+modulate = Color( 0, 0, 0, 1 )
+margin_left = 496.0
+margin_top = 288.0
+margin_right = 665.0
+margin_bottom = 378.0
+custom_constants/line_spacing = 0
+custom_fonts/font = ExtResource( 3 )
+text = "Yes"
+align = 1
+autowrap = true
+
+[node name="Yes" type="TextureButton" parent="HintConfirm/YesLabel"]
+margin_left = 17.0
+margin_top = 6.0
+margin_right = 154.0
+margin_bottom = 90.0
+mouse_default_cursor_shape = 8
+
+[node name="Hint" type="TextureRect" parent="."]
+visible = false
+margin_right = 40.0
+margin_bottom = 40.0
+texture = ExtResource( 1 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Notice" type="Label" parent="Hint"]
+modulate = Color( 0, 0, 0, 1 )
+margin_left = 158.0
+margin_top = 128.0
+margin_right = 753.0
+margin_bottom = 286.0
+custom_constants/line_spacing = 0
+custom_fonts/font = ExtResource( 2 )
+text = "Take another look at the other
+6 disk messages, something from
+those might help you here."
+align = 1
+autowrap = true
+
+[node name="NoLabel" type="Label" parent="Hint"]
+modulate = Color( 0, 0, 0, 1 )
+margin_left = 347.0
+margin_top = 334.0
+margin_right = 556.0
+margin_bottom = 424.0
+custom_constants/line_spacing = 0
+custom_fonts/font = ExtResource( 3 )
+text = "Back"
+align = 1
+autowrap = true
+
+[node name="Back" type="TextureButton" parent="Hint/NoLabel"]
+margin_left = 20.0
+margin_top = 4.0
+margin_right = 190.0
+margin_bottom = 88.0
+mouse_default_cursor_shape = 8
+
+[node name="fRED" type="TextureRect" parent="."]
+visible = false
+margin_right = 40.0
+margin_bottom = 40.0
+texture = ExtResource( 1 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="TextureRect" type="TextureRect" parent="fRED"]
+margin_left = 19.0
+margin_top = 80.0
+margin_right = 884.0
+margin_bottom = 459.0
+texture = ExtResource( 6 )
+expand = true
+
+[node name="Notice" type="Label" parent="fRED"]
+margin_left = 56.0
+margin_top = 108.0
+margin_right = 849.0
+margin_bottom = 266.0
+custom_constants/line_spacing = 0
+custom_fonts/font = ExtResource( 2 )
+text = "fREDbot is still sleeping happily with his flower, awaiting the release of fRED 3."
+align = 1
+autowrap = true
+
+[node name="XButton" type="TextureButton" parent="."]
+margin_left = 843.0
+margin_top = 8.0
+margin_right = 893.0
+margin_bottom = 57.0
+mouse_default_cursor_shape = 8
+
+[connection signal="pressed" from="Encryption/C1Down" to="." method="_on_C1Down_pressed"]
+[connection signal="pressed" from="Encryption/C1Up" to="." method="_on_C1Up_pressed"]
+[connection signal="pressed" from="Encryption/C2Down" to="." method="_on_C2Down_pressed"]
+[connection signal="pressed" from="Encryption/C2Up" to="." method="_on_C2Up_pressed"]
+[connection signal="pressed" from="Encryption/C3Down" to="." method="_on_C3Down_pressed"]
+[connection signal="pressed" from="Encryption/C3Up" to="." method="_on_C3Up_pressed"]
+[connection signal="pressed" from="Encryption/C4Down" to="." method="_on_C4Down_pressed"]
+[connection signal="pressed" from="Encryption/C4Up" to="." method="_on_C4Up_pressed"]
+[connection signal="pressed" from="Encryption/C5Down" to="." method="_on_C5Down_pressed"]
+[connection signal="pressed" from="Encryption/C5Up" to="." method="_on_C5Up_pressed"]
+[connection signal="pressed" from="Encryption/C6Down" to="." method="_on_C6Down_pressed"]
+[connection signal="pressed" from="Encryption/C6Up" to="." method="_on_C6Up_pressed"]
+[connection signal="pressed" from="Encryption/ForgotPass/ForgotPass" to="." method="_on_ForgotPass_pressed"]
+[connection signal="pressed" from="HintConfirm/NoLabel/No" to="." method="_on_No_pressed"]
+[connection signal="pressed" from="HintConfirm/YesLabel/Yes" to="." method="_on_Yes_pressed"]
+[connection signal="pressed" from="Hint/NoLabel/Back" to="." method="_on_Back_pressed"]
+[connection signal="pressed" from="XButton" to="." method="_on_TextureButton_pressed"]

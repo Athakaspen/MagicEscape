@@ -1,0 +1,277 @@
+[gd_scene load_steps=15 format=2]
+
+[ext_resource path="res://Screens/TrafficJam.gd" type="Script" id=1]
+[ext_resource path="res://Screens/TrafficPiece.gd" type="Script" id=2]
+[ext_resource path="res://ClickableArea.gd" type="Script" id=3]
+[ext_resource path="res://Sprites/Backgrounds/trafficjam.png" type="Texture" id=4]
+[ext_resource path="res://Sprites/Objects/trafficpiece3.png" type="Texture" id=5]
+[ext_resource path="res://Sprites/Objects/goldpiece.png" type="Texture" id=6]
+[ext_resource path="res://Sprites/Objects/trafficpiece2.png" type="Texture" id=7]
+[ext_resource path="res://Fonts/Comic64.tres" type="DynamicFont" id=8]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 112, 56 )
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 168, 56 )
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 56, 168 )
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 56, 112 )
+
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 106, 83 )
+
+[sub_resource type="RectangleShape2D" id=6]
+extents = Vector2( 985, 100 )
+
+[node name="TrafficJam" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="BG" type="Sprite" parent="."]
+texture = ExtResource( 4 )
+centered = false
+
+[node name="Border" type="Area2D" parent="."]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Border"]
+polygon = PoolVector2Array( 1299, 429, 1299, 784, 589, 782, 591, 78, 1301, 79, 1298, 295, 1386, 295, 1388, 10, 527, 7, 522, 858, 1365, 861, 1375, 428 )
+
+[node name="GoldPiece" type="Area2D" parent="."]
+position = Vector2( 709, 370 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GoldPiece"]
+shape = SubResource( 1 )
+
+[node name="Sprite" type="Sprite" parent="GoldPiece"]
+texture = ExtResource( 6 )
+
+[node name="724" type="Label" parent="GoldPiece"]
+visible = false
+modulate = Color( 1, 0.94902, 0, 1 )
+margin_left = -57.0
+margin_top = -48.0
+margin_right = 60.0
+margin_bottom = 42.0
+custom_fonts/font = ExtResource( 8 )
+text = "724"
+
+[node name="2H" type="Area2D" parent="."]
+position = Vector2( 1056, 259 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="2H"]
+shape = SubResource( 1 )
+
+[node name="Sprite" type="Sprite" parent="2H"]
+texture = ExtResource( 7 )
+
+[node name="2H3" type="Area2D" parent="."]
+position = Vector2( 1172, 606 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="2H3"]
+shape = SubResource( 1 )
+
+[node name="Sprite" type="Sprite" parent="2H3"]
+texture = ExtResource( 7 )
+
+[node name="2H2" type="Area2D" parent="."]
+position = Vector2( 825, 489 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="2H2"]
+shape = SubResource( 1 )
+
+[node name="Sprite" type="Sprite" parent="2H2"]
+texture = ExtResource( 7 )
+
+[node name="2H4" type="Area2D" parent="."]
+position = Vector2( 1056, 142 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="2H4"]
+shape = SubResource( 1 )
+
+[node name="Sprite" type="Sprite" parent="2H4"]
+texture = ExtResource( 7 )
+
+[node name="3H" type="Area2D" parent="."]
+position = Vector2( 767, 723 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="3H"]
+shape = SubResource( 2 )
+
+[node name="Sprite" type="Sprite" parent="3H"]
+texture = ExtResource( 5 )
+
+[node name="3H2" type="Area2D" parent="."]
+position = Vector2( 768, 142 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="3H2"]
+shape = SubResource( 2 )
+
+[node name="Sprite" type="Sprite" parent="3H2"]
+texture = ExtResource( 5 )
+
+[node name="3V" type="Area2D" parent="."]
+position = Vector2( 999, 602 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+direction = "vertical"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="3V"]
+shape = SubResource( 3 )
+
+[node name="Sprite" type="Sprite" parent="3V"]
+rotation = 1.5708
+texture = ExtResource( 5 )
+
+[node name="3V2" type="Area2D" parent="."]
+position = Vector2( 1232, 258 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+direction = "vertical"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="3V2"]
+shape = SubResource( 3 )
+
+[node name="Sprite" type="Sprite" parent="3V2"]
+rotation = 1.5708
+texture = ExtResource( 5 )
+
+[node name="2V" type="Area2D" parent="."]
+position = Vector2( 653, 545 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+direction = "vertical"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="2V"]
+shape = SubResource( 4 )
+
+[node name="Sprite" type="Sprite" parent="2V"]
+rotation = 1.5708
+texture = ExtResource( 7 )
+
+[node name="2V2" type="Area2D" parent="."]
+position = Vector2( 883, 315 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+direction = "vertical"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="2V2"]
+shape = SubResource( 4 )
+
+[node name="Sprite" type="Sprite" parent="2V2"]
+rotation = 1.5708
+texture = ExtResource( 7 )
+
+[node name="2V3" type="Area2D" parent="."]
+position = Vector2( 1116, 433 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+direction = "vertical"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="2V3"]
+shape = SubResource( 4 )
+
+[node name="Sprite" type="Sprite" parent="2V3"]
+rotation = 1.5708
+texture = ExtResource( 7 )
+
+[node name="WinZone" type="Area2D" parent="."]
+position = Vector2( 1582, 366 )
+collision_layer = 0
+monitorable = false
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WinZone"]
+shape = SubResource( 5 )
+
+[node name="Back" type="Area2D" parent="."]
+position = Vector2( 960, 986 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "back"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Back"]
+shape = SubResource( 6 )
+
+[connection signal="input_event" from="GoldPiece" to="GoldPiece" method="_on_Piece_input_event"]
+[connection signal="mouse_entered" from="GoldPiece" to="GoldPiece" method="_on_Piece_mouse_entered"]
+[connection signal="mouse_exited" from="GoldPiece" to="GoldPiece" method="_on_Piece_mouse_exited"]
+[connection signal="input_event" from="2H" to="2H" method="_on_Piece_input_event"]
+[connection signal="mouse_entered" from="2H" to="2H" method="_on_Piece_mouse_entered"]
+[connection signal="mouse_exited" from="2H" to="2H" method="_on_Piece_mouse_exited"]
+[connection signal="input_event" from="2H3" to="2H3" method="_on_Piece_input_event"]
+[connection signal="mouse_entered" from="2H3" to="2H3" method="_on_Piece_mouse_entered"]
+[connection signal="mouse_exited" from="2H3" to="2H3" method="_on_Piece_mouse_exited"]
+[connection signal="input_event" from="2H2" to="2H2" method="_on_Piece_input_event"]
+[connection signal="mouse_entered" from="2H2" to="2H2" method="_on_Piece_mouse_entered"]
+[connection signal="mouse_exited" from="2H2" to="2H2" method="_on_Piece_mouse_exited"]
+[connection signal="input_event" from="2H4" to="2H4" method="_on_Piece_input_event"]
+[connection signal="mouse_entered" from="2H4" to="2H4" method="_on_Piece_mouse_entered"]
+[connection signal="mouse_exited" from="2H4" to="2H4" method="_on_Piece_mouse_exited"]
+[connection signal="input_event" from="3H" to="3H" method="_on_Piece_input_event"]
+[connection signal="mouse_entered" from="3H" to="3H" method="_on_Piece_mouse_entered"]
+[connection signal="mouse_exited" from="3H" to="3H" method="_on_Piece_mouse_exited"]
+[connection signal="input_event" from="3H2" to="3H2" method="_on_Piece_input_event"]
+[connection signal="mouse_entered" from="3H2" to="3H2" method="_on_Piece_mouse_entered"]
+[connection signal="mouse_exited" from="3H2" to="3H2" method="_on_Piece_mouse_exited"]
+[connection signal="input_event" from="3V" to="3V" method="_on_Piece_input_event"]
+[connection signal="mouse_entered" from="3V" to="3V" method="_on_Piece_mouse_entered"]
+[connection signal="mouse_exited" from="3V" to="3V" method="_on_Piece_mouse_exited"]
+[connection signal="input_event" from="3V2" to="3V2" method="_on_Piece_input_event"]
+[connection signal="mouse_entered" from="3V2" to="3V2" method="_on_Piece_mouse_entered"]
+[connection signal="mouse_exited" from="3V2" to="3V2" method="_on_Piece_mouse_exited"]
+[connection signal="input_event" from="2V" to="2V" method="_on_Piece_input_event"]
+[connection signal="mouse_entered" from="2V" to="2V" method="_on_Piece_mouse_entered"]
+[connection signal="mouse_exited" from="2V" to="2V" method="_on_Piece_mouse_exited"]
+[connection signal="input_event" from="2V2" to="2V2" method="_on_Piece_input_event"]
+[connection signal="mouse_entered" from="2V2" to="2V2" method="_on_Piece_mouse_entered"]
+[connection signal="mouse_exited" from="2V2" to="2V2" method="_on_Piece_mouse_exited"]
+[connection signal="input_event" from="2V3" to="2V3" method="_on_Piece_input_event"]
+[connection signal="mouse_entered" from="2V3" to="2V3" method="_on_Piece_mouse_entered"]
+[connection signal="mouse_exited" from="2V3" to="2V3" method="_on_Piece_mouse_exited"]
+[connection signal="area_shape_entered" from="WinZone" to="." method="_on_WinZone_area_shape_entered"]
+[connection signal="clicked" from="Back" to="." method="_on_Back_clicked"]

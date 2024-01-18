@@ -1,0 +1,49 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Fonts/Comic32.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Sprites/Overlays/diary.png" type="Texture" id=2]
+
+[node name="Image" type="TextureRect"]
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource( 2 )
+
+[node name="Left" type="Label" parent="."]
+margin_left = 436.0
+margin_top = 153.0
+margin_right = 865.0
+margin_bottom = 773.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = ExtResource( 1 )
+text = "Dear Diary,
+
+    Mom says the house
+	next door belongs to a
+	witch, so I shouldn't
+	go there.
+	    But if it really is
+		a witch's house, it must
+		be really cool!	 I'm gonna
+		go check it out today
+		while mom is gone.
+	"
+
+[node name="Right" type="Label" parent="."]
+margin_left = 954.0
+margin_top = 171.0
+margin_right = 1383.0
+margin_bottom = 791.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = ExtResource( 1 )
+text = "
+    I'll just check it
+	out and come right back
+	before mom even notices
+	that I've left.
+	
+	    Mom also said to
+	remember I can toggle
+	fullscreen mode any
+	time by pressing 'F.'
+	"

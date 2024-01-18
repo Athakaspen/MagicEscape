@@ -1,0 +1,38 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Sprites/Backgrounds/closetshelf.png" type="Texture" id=1]
+[ext_resource path="res://Sprites/Objects/topshelf-quarters.png" type="Texture" id=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends TextureRect
+
+func _ready():
+	# cursor setup
+	MouseHelper.set_cursor(\"hand\", CURSOR_POINTING_HAND)
+	
+	if WorldData.collectable_dict[\"quarter-topshelf\"] == false:
+		$TextureButton.hide()
+
+func _on_TextureButton_pressed():
+	Inventory.add_quarters(2)
+	WorldData.collectable_dict[\"quarter-topshelf\"] = false
+	Helpers.play_sound(Helpers.SFX_ding)
+	$TextureButton.hide()
+	Notifications.notify(\"I found 2 quarters!\")
+"
+
+[node name="TopShelf" type="TextureRect"]
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource( 1 )
+script = SubResource( 1 )
+
+[node name="TextureButton" type="TextureButton" parent="."]
+margin_left = 460.0
+margin_top = 216.0
+margin_right = 661.0
+margin_bottom = 357.0
+texture_normal = ExtResource( 2 )
+
+[connection signal="pressed" from="TextureButton" to="." method="_on_TextureButton_pressed"]

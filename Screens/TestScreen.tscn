@@ -1,0 +1,48 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://ClickableArea.gd" type="Script" id=1]
+[ext_resource path="res://Screens/TestScreen.gd" type="Script" id=2]
+[ext_resource path="res://Sprites/Backgrounds/house.png" type="Texture" id=3]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 100, 159 )
+
+[sub_resource type="CapsuleShape2D" id=2]
+radius = 32.0
+height = 88.0
+
+[node name="TestScreen" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="BG" type="Sprite" parent="."]
+texture = ExtResource( 3 )
+centered = false
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Door" type="Area2D" parent="."]
+position = Vector2( 1066, 618 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "forward"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Door"]
+shape = SubResource( 1 )
+
+[node name="ClickableArea" type="Area2D" parent="."]
+position = Vector2( 1546, 783 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "normal"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ClickableArea"]
+rotation = 1.5708
+shape = SubResource( 2 )
+
+[connection signal="clicked" from="Door" to="." method="_on_Door_clicked"]
+[connection signal="clicked" from="ClickableArea" to="." method="_on_ClickableArea_clicked"]

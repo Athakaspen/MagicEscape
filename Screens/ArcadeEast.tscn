@@ -1,0 +1,194 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://Sprites/Backgrounds/ArcadeEast.png" type="Texture" id=1]
+[ext_resource path="res://ClickableArea.gd" type="Script" id=2]
+[ext_resource path="res://Sprites/Objects/OpenDoor.png" type="Texture" id=3]
+[ext_resource path="res://Sprites/Objects/ArcadeMatStain.png" type="Texture" id=4]
+[ext_resource path="res://Screens/ArcadeQuarter.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Fonts/Comic32.tres" type="DynamicFont" id=7]
+[ext_resource path="res://Fonts/comicbd.ttf" type="DynamicFontData" id=8]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+var front_door_open := false
+
+func _ready():
+	if WorldData.is_mat_cleaned:
+		$MatStain.hide()
+		$Doormat.hide()
+	$OpenDoor.hide()
+	
+# warning-ignore:return_value_discarded
+	WorldData.connect('spawn_quarter', self, 'spawn_quarter')
+
+func _process(_delta):
+	if WorldData.check_item('quarter-arcade'):
+		$FreeQuarter.show()
+		$NextQuarterIn.hide()
+	else:
+		$FreeQuarter.hide()
+		$NextQuarterIn.show()
+		$NextQuarterIn/TimerLabel.text = \"%d:%02d\" % [floor(WorldData.quarter_time/60), floor(fmod(WorldData.quarter_time,60))]
+
+func _on_Back_clicked():
+	ScreenManager.change_screen(\"res://Screens/ArcadeWest.tscn\")
+
+
+func _on_Door_clicked():
+	if front_door_open:
+		ScreenManager.change_screen(\"res://Screens/RoomEast.tscn\")
+	else:
+		front_door_open = true
+		$OpenDoor.visible = true
+		$Door.hover_cursor = \"forward\"
+		MouseHelper.set_cursor(\"forward\")
+
+
+func _on_Doormat_clicked():
+	if Inventory.active_item == \"water-bucket\":
+		# clean mat
+		Inventory.remove_item(\"water-bucket\")
+		$MatStain.hide()
+		$Doormat.hide()
+		WorldData.is_mat_cleaned = true
+	elif not WorldData.is_mat_cleaned:
+		Notifications.notify(\"There's a stain on this mat that makes it impossible to read.\")
+
+
+func _on_ArcadeQuarter_clicked(emitter):
+	Helpers.remove_world_item(emitter)
+	Inventory.add_quarters(1)
+	Notifications.notify(\"Free quarter!\")
+	WorldData.quarter_time = 120
+
+var quarter_res = preload(\"res://Screens/ArcadeQuarter.tscn\")
+func spawn_quarter():
+	var q = quarter_res.instance()
+	q.connect(\"clicked\", self, \"_on_ArcadeQuarter_clicked\")
+	add_child(q)
+"
+
+[sub_resource type="RectangleShape2D" id=6]
+extents = Vector2( 157, 449 )
+
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 195, 361.5 )
+
+[sub_resource type="DynamicFont" id=8]
+size = 48
+font_data = ExtResource( 8 )
+
+[node name="Screen" type="Node2D"]
+script = SubResource( 1 )
+
+[node name="BG" type="Sprite" parent="."]
+texture = ExtResource( 1 )
+centered = false
+
+[node name="OpenDoor" type="Sprite" parent="."]
+visible = false
+position = Vector2( 1292.5, 486 )
+scale = Vector2( 1.41367, 1.39464 )
+texture = ExtResource( 3 )
+
+[node name="MatStain" type="Sprite" parent="."]
+position = Vector2( 1094, 845 )
+texture = ExtResource( 4 )
+centered = false
+
+[node name="Back" type="Area2D" parent="."]
+position = Vector2( 958, 1013 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "turnaround"
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Back"]
+polygon = PoolVector2Array( -973, -75, 123, -77, 148, 25, 650, 25, 610, -73, 1010, -73, 1010, 145, -979, 118 )
+
+[node name="Back2" type="Area2D" parent="."]
+position = Vector2( 117, 484 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "turnaround"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Back2"]
+position = Vector2( 0, -37 )
+shape = SubResource( 6 )
+
+[node name="Back3" type="Area2D" parent="."]
+position = Vector2( 1821, 484 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "turnaround"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Back3"]
+position = Vector2( 0, -37 )
+shape = SubResource( 6 )
+
+[node name="Door" type="Area2D" parent="."]
+position = Vector2( 1200, 226 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "hand"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Door"]
+position = Vector2( 95, 261.5 )
+shape = SubResource( 5 )
+
+[node name="Doormat" type="Area2D" parent="."]
+position = Vector2( 1313, 932 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Doormat"]
+polygon = PoolVector2Array( -171, 71, 239, 70, 174, -68, -198, -67 )
+
+[node name="ArcadeQuarter" parent="." instance=ExtResource( 5 )]
+
+[node name="FreeQuarter" type="Label" parent="."]
+visible = false
+modulate = Color( 0.929412, 0.109804, 0.141176, 1 )
+margin_left = 506.0
+margin_top = 585.0
+margin_right = 922.0
+margin_bottom = 661.0
+custom_fonts/font = SubResource( 8 )
+text = "FREE QUARTER!"
+align = 1
+
+[node name="NextQuarterIn" type="Label" parent="."]
+modulate = Color( 0.929412, 0.109804, 0.141176, 1 )
+margin_left = 506.0
+margin_top = 575.0
+margin_right = 922.0
+margin_bottom = 651.0
+custom_fonts/font = ExtResource( 7 )
+text = "Next free quarter in:"
+align = 1
+
+[node name="TimerLabel" type="Label" parent="NextQuarterIn"]
+modulate = Color( 0.929412, 0.109804, 0.141176, 1 )
+margin_top = 48.0
+margin_right = 416.0
+margin_bottom = 124.0
+custom_fonts/font = ExtResource( 7 )
+text = "X:XX"
+align = 1
+
+[connection signal="clicked" from="Back" to="." method="_on_Back_clicked"]
+[connection signal="clicked" from="Back2" to="." method="_on_Back_clicked"]
+[connection signal="clicked" from="Back3" to="." method="_on_Back_clicked"]
+[connection signal="clicked" from="Door" to="." method="_on_Door_clicked"]
+[connection signal="clicked" from="Doormat" to="." method="_on_Doormat_clicked"]
+[connection signal="clicked" from="ArcadeQuarter" to="." method="_on_ArcadeQuarter_clicked"]

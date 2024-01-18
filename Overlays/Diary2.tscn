@@ -1,0 +1,93 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Fonts/Comic32.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Sprites/Overlays/diary.png" type="Texture" id=2]
+[ext_resource path="res://Sprites/Objects/Fredbot.png" type="Texture" id=3]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends TextureRect
+
+
+func _ready():
+	$Left.text = $Left.text % [floor(WorldData.game_timer/60),\\
+	floor(fmod(WorldData.game_timer, 60)),\\
+	WorldData.num_tickets_payed + Inventory.num_tickets]
+	
+	if WorldData.check_item('cake') == false:
+		$Right.hide()
+		$RightCake.show()
+"
+
+[node name="Image" type="TextureRect"]
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource( 2 )
+script = SubResource( 1 )
+
+[node name="Left" type="Label" parent="."]
+margin_left = 406.0
+margin_top = 135.0
+margin_right = 861.0
+margin_bottom = 831.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = ExtResource( 1 )
+text = "Dear Diary,
+
+    I escaped! And it only took %d minutes and %d seconds. I even got to play some games and won %d tickets along the way.
+	    I can see why mom told me not to play over there, but it wasn't all bad. Maybe I can even convince mom to be friends with the witch when she comes home!"
+autowrap = true
+
+[node name="Right" type="Label" parent="."]
+margin_left = 915.0
+margin_top = 153.0
+margin_right = 1422.0
+margin_bottom = 738.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = ExtResource( 1 )
+text = "This was a game by
+Athakaspen
+
+
+
+
+Created in 1 week for the Spring 2023 S&T Game Jam
+
+Made using Godot
+
+Thanks for playing!"
+align = 1
+autowrap = true
+
+[node name="Fredbot" type="Sprite" parent="Right"]
+position = Vector2( 253, 196 )
+scale = Vector2( 0.424, 0.424 )
+texture = ExtResource( 3 )
+
+[node name="RightCake" type="Label" parent="."]
+visible = false
+margin_left = 915.0
+margin_top = 139.0
+margin_right = 1422.0
+margin_bottom = 773.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = ExtResource( 1 )
+text = "This was a game by
+Athakaspen
+
+
+
+
+Created in 1 week for the Spring 2023 S&T Game Jam
+
+Made using Godot
+
+Thanks for playing-
+And enjoy your cake!"
+align = 1
+autowrap = true
+
+[node name="Fredbot" type="Sprite" parent="RightCake"]
+position = Vector2( 253, 196 )
+scale = Vector2( 0.424, 0.424 )
+texture = ExtResource( 3 )

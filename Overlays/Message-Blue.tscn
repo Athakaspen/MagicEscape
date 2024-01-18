@@ -1,0 +1,61 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Sprites/Overlays/pc-window.png" type="Texture" id=1]
+[ext_resource path="res://Fonts/Comic32.tres" type="DynamicFont" id=2]
+[ext_resource path="res://Fonts/Comic64.tres" type="DynamicFont" id=3]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends TextureRect
+
+func _ready():
+	# for x button
+	MouseHelper.set_cursor('examine', CURSOR_FORBIDDEN)
+
+
+func _on_TextureButton_pressed():
+	# X button
+	get_parent().queue_free()
+"
+
+[node name="Image" type="TextureRect"]
+margin_left = 501.0
+margin_top = 204.0
+margin_right = 1405.0
+margin_bottom = 689.0
+mouse_filter = 2
+texture = ExtResource( 1 )
+script = SubResource( 1 )
+
+[node name="XButton" type="TextureButton" parent="."]
+margin_left = 843.0
+margin_top = 8.0
+margin_right = 893.0
+margin_bottom = 57.0
+mouse_default_cursor_shape = 8
+
+[node name="Body" type="Label" parent="."]
+modulate = Color( 0, 0.635294, 0.909804, 1 )
+margin_left = 48.0
+margin_top = 114.0
+margin_right = 854.0
+margin_bottom = 446.0
+custom_constants/line_spacing = 0
+custom_fonts/font = ExtResource( 2 )
+text = "    ook, I know you're probably ignoring these messages by now, but please at least read them. I can't just tell anyone on the street that I'm a witch, so this is the only way I can honestly talk about my life to a normal person. Talking with other witches and wizards is fine, but... I like to connect with the non-magic world sometimes, too."
+align = 3
+autowrap = true
+
+[node name="FirstLetter" type="Label" parent="."]
+modulate = Color( 0, 0.635294, 0.909804, 1 )
+margin_left = 46.0
+margin_top = 65.0
+margin_right = 106.0
+margin_bottom = 170.0
+custom_constants/line_spacing = 0
+custom_fonts/font = ExtResource( 3 )
+text = "L"
+align = 2
+valign = 2
+autowrap = true
+
+[connection signal="pressed" from="XButton" to="." method="_on_TextureButton_pressed"]

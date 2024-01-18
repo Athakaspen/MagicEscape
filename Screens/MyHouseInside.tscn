@@ -1,0 +1,112 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://ClickableArea.gd" type="Script" id=1]
+[ext_resource path="res://Sprites/Backgrounds/myhouse.png" type="Texture" id=2]
+[ext_resource path="res://Sprites/Objects/book.png" type="Texture" id=3]
+[ext_resource path="res://Sprites/Objects/portalcake.png" type="Texture" id=4]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+func _ready():
+	if WorldData.first_open:
+		ScreenManager.create_overlay(\"res://Overlays/Diary.tscn\")
+		WorldData.first_open = false
+	elif WorldData.escaped:
+		ScreenManager.create_overlay(\"res://Overlays/Diary2.tscn\")
+	
+	$Cake.visible = WorldData.check_item('cake') == false
+
+
+func _on_FrontDoor_clicked():
+	ScreenManager.change_screen(\"res://Screens/RoadFront.tscn\")
+
+func _on_Book_clicked():
+	if !WorldData.escaped:
+		ScreenManager.create_overlay(\"res://Overlays/Diary.tscn\")
+	else:
+		ScreenManager.create_overlay(\"res://Overlays/Diary2.tscn\")
+
+
+func _on_SideDoor_clicked():
+	Notifications.notify(\"I don't need to go there now.\")
+
+
+func _on_Cake_clicked():
+	Notifications.notify(\"The cake wasn't a lie after all!\")
+"
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 164, 352 )
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 52, 35 )
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 100, 471 )
+
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 83, 66 )
+
+[node name="Screen" type="Node2D"]
+script = SubResource( 1 )
+
+[node name="BG" type="Sprite" parent="."]
+texture = ExtResource( 2 )
+centered = false
+
+[node name="FrontDoor" type="Area2D" parent="."]
+position = Vector2( 977, 604 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "forward"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FrontDoor"]
+shape = SubResource( 2 )
+
+[node name="BookSprite" type="Sprite" parent="."]
+position = Vector2( 1310, 693 )
+texture = ExtResource( 3 )
+
+[node name="Book" type="Area2D" parent="."]
+position = Vector2( 1310, 693 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Book"]
+shape = SubResource( 3 )
+
+[node name="SideDoor" type="Area2D" parent="."]
+position = Vector2( 239, 610 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "left"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SideDoor"]
+shape = SubResource( 4 )
+
+[node name="Cake" type="Area2D" parent="."]
+position = Vector2( 1489, 659 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Cake"]
+shape = SubResource( 5 )
+
+[node name="Portalcake" type="Sprite" parent="Cake"]
+position = Vector2( -4.00012, -12.9999 )
+scale = Vector2( 0.816062, 0.816062 )
+texture = ExtResource( 4 )
+
+[connection signal="clicked" from="FrontDoor" to="." method="_on_FrontDoor_clicked"]
+[connection signal="clicked" from="Book" to="." method="_on_Book_clicked"]
+[connection signal="clicked" from="SideDoor" to="." method="_on_SideDoor_clicked"]
+[connection signal="clicked" from="Cake" to="." method="_on_Cake_clicked"]

@@ -1,0 +1,51 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Sprites/Backgrounds/blankwhite.png" type="Texture" id=2]
+[ext_resource path="res://Fonts/Comic64.tres" type="DynamicFont" id=3]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends CanvasLayer
+
+func _ready():
+	MouseHelper.set_cursor('normal')
+	MouseHelper.set_cursor('back', Input.CURSOR_IBEAM)
+
+func _on_TextureButton_pressed():
+	Inventory.deactivate_item()
+	MouseHelper.set_cursor('normal')
+	self.queue_free()
+"
+
+[node name="Overlay" type="CanvasLayer"]
+layer = 50
+script = SubResource( 1 )
+
+[node name="Background" type="TextureRect" parent="."]
+modulate = Color( 0, 0, 0, 0.0470588 )
+margin_left = -57.0
+margin_top = -30.0
+margin_right = 1972.0
+margin_bottom = 1153.0
+texture = ExtResource( 2 )
+stretch_mode = 2
+
+[node name="TextureButton" type="TextureButton" parent="."]
+modulate = Color( 0.266667, 0.270588, 0.286275, 0.447059 )
+margin_left = -33.0
+margin_top = 915.0
+margin_right = 1963.0
+margin_bottom = 1105.0
+mouse_default_cursor_shape = 1
+texture_normal = ExtResource( 2 )
+expand = true
+stretch_mode = 1
+
+[node name="Label" type="Label" parent="."]
+margin_left = 881.0
+margin_top = 948.0
+margin_right = 1025.0
+margin_bottom = 1038.0
+custom_fonts/font = ExtResource( 3 )
+text = "Back"
+
+[connection signal="pressed" from="TextureButton" to="." method="_on_TextureButton_pressed"]

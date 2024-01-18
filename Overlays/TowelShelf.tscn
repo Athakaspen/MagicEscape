@@ -1,0 +1,177 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Sprites/Backgrounds/closetshelf.png" type="Texture" id=1]
+[ext_resource path="res://Sprites/Objects/towel-large.png" type="Texture" id=2]
+[ext_resource path="res://Sprites/Objects/CD-red.png" type="Texture" id=3]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends TextureRect
+
+func _ready():
+	# cursor setup
+	MouseHelper.set_cursor(\"hand\", CURSOR_POINTING_HAND)
+	
+	if WorldData.collectable_dict[\"closet-disk\"] == false:
+		$ClosetCD.hide()
+
+var towels_on_right = 6
+
+func _on_Right_pressed():
+	if towels_on_right > 0:
+		towels_on_right -= 1
+		$Right.get_child(towels_on_right).hide()
+		$Left.get_child(5-towels_on_right).show()
+		$Left.show()
+	if towels_on_right == 0:
+		$Right.hide()
+
+func _on_Left_pressed():
+	if towels_on_right < 6:
+		towels_on_right += 1
+		$Right.get_child(towels_on_right-1).show()
+		$Left.get_child(6-towels_on_right).hide()
+		$Right.show()
+	if towels_on_right == 0:
+		$Leftt.hide()
+
+func _on_YellowCD_pressed():
+	Inventory.add_item(\"red-disk\")
+	WorldData.collectable_dict[\"closet-disk\"] = false
+	Helpers.play_sound(Helpers.SFX_ding)
+	$ClosetCD.hide()
+"
+
+[node name="TowelShelf" type="TextureRect"]
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource( 1 )
+script = SubResource( 1 )
+
+[node name="ClosetCD" type="TextureButton" parent="."]
+margin_left = 1131.0
+margin_top = 559.0
+margin_right = 1179.0
+margin_bottom = 582.0
+rect_scale = Vector2( 8, 8 )
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource( 3 )
+
+[node name="Right" type="TextureButton" parent="."]
+margin_left = 971.0
+margin_top = -11.0
+margin_right = 1743.0
+margin_bottom = 856.0
+
+[node name="Towel1" type="TextureRect" parent="Right"]
+modulate = Color( 1, 0.498039, 0.152941, 1 )
+margin_left = 10.0
+margin_top = 247.0
+margin_right = 738.0
+margin_bottom = 868.0
+texture = ExtResource( 2 )
+
+[node name="Towel2" type="TextureRect" parent="Right"]
+modulate = Color( 0.6, 0.85098, 0.917647, 1 )
+margin_left = -8.0
+margin_top = 191.0
+margin_right = 720.0
+margin_bottom = 812.0
+texture = ExtResource( 2 )
+
+[node name="Towel3" type="TextureRect" parent="Right"]
+modulate = Color( 0.639216, 0.286275, 0.643137, 1 )
+margin_left = 32.0
+margin_top = 129.0
+margin_right = 760.0
+margin_bottom = 750.0
+texture = ExtResource( 2 )
+
+[node name="Towel4" type="TextureRect" parent="Right"]
+modulate = Color( 1, 0.788235, 0.054902, 1 )
+margin_top = 69.0
+margin_right = 728.0
+margin_bottom = 690.0
+texture = ExtResource( 2 )
+
+[node name="Towel5" type="TextureRect" parent="Right"]
+modulate = Color( 0.247059, 0.282353, 0.8, 1 )
+margin_left = -46.0
+margin_top = 1.0
+margin_right = 682.0
+margin_bottom = 622.0
+texture = ExtResource( 2 )
+
+[node name="Towel6" type="TextureRect" parent="Right"]
+modulate = Color( 0.533333, 0, 0.0823529, 1 )
+margin_left = 34.0
+margin_top = -71.0
+margin_right = 762.0
+margin_bottom = 550.0
+texture = ExtResource( 2 )
+
+[node name="Left" type="TextureButton" parent="."]
+margin_left = 931.0
+margin_top = 5.0
+margin_right = 1699.0
+margin_bottom = 852.0
+rect_scale = Vector2( -1, 1 )
+mouse_default_cursor_shape = 2
+
+[node name="Towel6" type="TextureRect" parent="Left"]
+visible = false
+modulate = Color( 0.533333, 0, 0.0823529, 1 )
+margin_left = -8.0
+margin_top = 232.0
+margin_right = 720.0
+margin_bottom = 853.0
+texture = ExtResource( 2 )
+
+[node name="Towel5" type="TextureRect" parent="Left"]
+visible = false
+modulate = Color( 0.247059, 0.282353, 0.8, 1 )
+margin_left = 38.0
+margin_top = 172.0
+margin_right = 766.0
+margin_bottom = 793.0
+texture = ExtResource( 2 )
+
+[node name="Towel4" type="TextureRect" parent="Left"]
+visible = false
+modulate = Color( 1, 0.788235, 0.054902, 1 )
+margin_left = -14.0
+margin_top = 103.0
+margin_right = 714.0
+margin_bottom = 724.0
+texture = ExtResource( 2 )
+
+[node name="Towel3" type="TextureRect" parent="Left"]
+visible = false
+modulate = Color( 0.639216, 0.286275, 0.643137, 1 )
+margin_left = 9.0
+margin_top = 50.0
+margin_right = 737.0
+margin_bottom = 671.0
+texture = ExtResource( 2 )
+
+[node name="Towel2" type="TextureRect" parent="Left"]
+visible = false
+modulate = Color( 0.6, 0.85098, 0.917647, 1 )
+margin_left = -29.0
+margin_top = -30.0
+margin_right = 699.0
+margin_bottom = 591.0
+texture = ExtResource( 2 )
+
+[node name="Towel1" type="TextureRect" parent="Left"]
+visible = false
+modulate = Color( 1, 0.498039, 0.152941, 1 )
+margin_left = 41.0
+margin_top = -90.0
+margin_right = 769.0
+margin_bottom = 531.0
+texture = ExtResource( 2 )
+
+[connection signal="pressed" from="ClosetCD" to="." method="_on_YellowCD_pressed"]
+[connection signal="pressed" from="Right" to="." method="_on_Right_pressed"]
+[connection signal="pressed" from="Left" to="." method="_on_Left_pressed"]

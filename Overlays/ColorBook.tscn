@@ -1,0 +1,272 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Sprites/Overlays/green-book.png" type="Texture" id=1]
+[ext_resource path="res://Fonts/comicbd.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://Sprites/blank-white.png" type="Texture" id=3]
+[ext_resource path="res://Fonts/Comic64.tres" type="DynamicFont" id=4]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends TextureRect
+
+var cur_page = 0
+
+var colors = [
+	['red', 'orange', 'yellow'],
+	['purple', 'blue', 'yellow'],
+	['yellow', 'purple', 'blue'],
+	['blue', 'green', 'yellow'],
+	['blue', 'green', 'green'],
+	['orange', 'purple', 'yellow'],
+	['orange', 'yellow', 'yellow'],
+	['red', 'green', 'yellow'],
+	['purple', 'yellow', 'orange'],
+	['yellow', 'yellow', 'blue'],
+	['purple', 'orange', 'green'],
+	['red', 'blue', 'green'],
+	['purple', 'red', 'orange'],
+	['blue', 'green', 'orange'],
+	['yellow', 'red', 'yellow'],
+	['yellow', 'purple', 'yellow'],
+	['blue', 'yellow', 'yellow'],
+	['blue', 'red', 'purple'],
+	['yellow', 'green', 'purple'],
+	['yellow', 'yellow', 'red'],
+	['orange', 'purple', 'orange'],
+	['orange', 'green', 'orange'],
+	['orange', 'green', 'green'],
+	['red', 'purple', 'green'],
+	['purple', 'red', 'orange'],
+	['orange', 'blue', 'orange'],
+	['red', 'purple', 'blue'],
+	['purple', 'orange', 'red'],
+	['red', 'red', 'green'],
+	['purple', 'blue', 'red'], # (30)
+	['yellow', 'orange', 'blue'],
+	['red', 'green', 'purple'],
+	['red', 'red', 'orange'],
+	['blue', 'purple', 'orange'],
+	['green', 'green', 'yellow'],
+	['red', 'red', 'green'],
+	['blue', 'orange', 'purple'], # THIS IS THE ANSWER (37)
+	['purple', 'yellow', 'red'],
+	['yellow', 'purple', 'yellow'],
+	['yellow', 'red', 'yellow'],
+	['purple', 'green', 'green'],
+	['purple', 'green', 'red'],
+	['orange', 'blue', 'green'],
+	['yellow', 'yellow', 'blue'],
+	['green', 'yellow', 'purple'],
+	['orange', 'yellow', 'red'],
+	['orange', 'blue', 'yellow'],
+	['red', 'orange', 'purple'],
+	['red', 'blue', 'green'],
+	['blue', 'blue', 'green'],
+	['red', 'red', 'purple'],
+	['purple', 'green', 'purple'],
+]
+
+func _ready():
+	MouseHelper.set_cursor(\"left\", CURSOR_DRAG)
+	MouseHelper.set_cursor(\"right\", CURSOR_CAN_DROP)
+	
+	update_pages()
+	
+	# generating colors
+#	randomize()
+#	var file = File.new()
+#	file.open(\"colors\", File.WRITE)
+#
+#	for _i in range(52):
+#		file.store_string(\"['%s', '%s', '%s'],\\n\" % [rand_col(), rand_col(), rand_col()])
+#	file.close()
+#
+#var choices = ['red', 'orange', 'yellow', 'green', 'blue', 'purple']
+#func rand_col():
+#	return choices[randi()%choices.size()]
+
+func update_pages():
+	# Left Page
+	$L1.modulate = Helpers.get_color_from_name(colors[cur_page][0])
+	$L1/Label.text = colors[cur_page][0][0].to_upper()
+	$L2.modulate = Helpers.get_color_from_name(colors[cur_page][1])
+	$L2/Label.text = colors[cur_page][1][0].to_upper()
+	$L3.modulate = Helpers.get_color_from_name(colors[cur_page][2])
+	$L3/Label.text = colors[cur_page][2][0].to_upper()
+	$LNum.text = str(cur_page+1)
+	
+	# Right Page
+	$R1.modulate = Helpers.get_color_from_name(colors[cur_page+1][0])
+	$R1/Label.text = colors[cur_page+1][0][0].to_upper()
+	$R2.modulate = Helpers.get_color_from_name(colors[cur_page+1][1])
+	$R2/Label.text = colors[cur_page+1][1][0].to_upper()
+	$R3.modulate = Helpers.get_color_from_name(colors[cur_page+1][2])
+	$R3/Label.text = colors[cur_page+1][2][0].to_upper()
+	$RNum.text = str(cur_page+2)
+
+
+func _on_Left_pressed():
+	if cur_page > 0:
+		cur_page -= 2
+		update_pages()
+
+
+func _on_Right_pressed():
+	if cur_page < colors.size()-3:
+		cur_page += 2
+		update_pages()
+"
+
+[sub_resource type="DynamicFont" id=2]
+size = 128
+font_data = ExtResource( 2 )
+
+[node name="Image" type="TextureRect"]
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource( 1 )
+script = SubResource( 1 )
+
+[node name="L1" type="TextureRect" parent="."]
+modulate = Color( 0.764706, 0.45098, 0.45098, 1 )
+margin_left = 453.0
+margin_top = 276.0
+margin_right = 577.0
+margin_bottom = 504.0
+texture = ExtResource( 3 )
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="L1"]
+margin_left = -6.0
+margin_top = 229.0
+margin_right = 129.0
+margin_bottom = 409.0
+custom_fonts/font = SubResource( 2 )
+text = "X"
+align = 1
+
+[node name="L2" type="TextureRect" parent="."]
+modulate = Color( 0.764706, 0.619608, 0.45098, 1 )
+margin_left = 573.0
+margin_top = 276.0
+margin_right = 697.0
+margin_bottom = 504.0
+texture = ExtResource( 3 )
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="L2"]
+margin_left = -6.0
+margin_top = 229.0
+margin_right = 129.0
+margin_bottom = 409.0
+custom_fonts/font = SubResource( 2 )
+text = "X"
+align = 1
+
+[node name="L3" type="TextureRect" parent="."]
+modulate = Color( 0.760784, 0.764706, 0.45098, 1 )
+margin_left = 697.0
+margin_top = 276.0
+margin_right = 821.0
+margin_bottom = 504.0
+texture = ExtResource( 3 )
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="L3"]
+margin_left = -6.0
+margin_top = 229.0
+margin_right = 129.0
+margin_bottom = 409.0
+custom_fonts/font = SubResource( 2 )
+text = "X"
+align = 1
+
+[node name="LNum" type="Label" parent="."]
+margin_left = 422.0
+margin_top = 709.0
+margin_right = 629.0
+margin_bottom = 799.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = ExtResource( 4 )
+text = "1"
+
+[node name="R1" type="TextureRect" parent="."]
+modulate = Color( 0.498039, 0.764706, 0.45098, 1 )
+margin_left = 971.0
+margin_top = 265.0
+margin_right = 1095.0
+margin_bottom = 493.0
+texture = ExtResource( 3 )
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="R1"]
+margin_left = -6.0
+margin_top = 229.0
+margin_right = 129.0
+margin_bottom = 409.0
+custom_fonts/font = SubResource( 2 )
+text = "X"
+align = 1
+
+[node name="R2" type="TextureRect" parent="."]
+modulate = Color( 0.45098, 0.494118, 0.764706, 1 )
+margin_left = 1091.0
+margin_top = 265.0
+margin_right = 1215.0
+margin_bottom = 493.0
+texture = ExtResource( 3 )
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="R2"]
+margin_left = -6.0
+margin_top = 229.0
+margin_right = 129.0
+margin_bottom = 409.0
+custom_fonts/font = SubResource( 2 )
+text = "X"
+align = 1
+
+[node name="R3" type="TextureRect" parent="."]
+modulate = Color( 0.666667, 0.45098, 0.764706, 1 )
+margin_left = 1215.0
+margin_top = 265.0
+margin_right = 1339.0
+margin_bottom = 493.0
+texture = ExtResource( 3 )
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="R3"]
+margin_left = -6.0
+margin_top = 229.0
+margin_right = 129.0
+margin_bottom = 409.0
+custom_fonts/font = SubResource( 2 )
+text = "X"
+align = 1
+
+[node name="RNum" type="Label" parent="."]
+margin_left = 1190.0
+margin_top = 686.0
+margin_right = 1400.0
+margin_bottom = 776.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = ExtResource( 4 )
+text = "2"
+align = 2
+
+[node name="Left" type="TextureButton" parent="."]
+margin_left = 299.0
+margin_top = 59.0
+margin_right = 781.0
+margin_bottom = 832.0
+mouse_default_cursor_shape = 6
+
+[node name="Right" type="TextureButton" parent="."]
+margin_left = 990.0
+margin_top = 66.0
+margin_right = 1510.0
+margin_bottom = 830.0
+mouse_default_cursor_shape = 7
+
+[connection signal="pressed" from="Left" to="." method="_on_Left_pressed"]
+[connection signal="pressed" from="Right" to="." method="_on_Right_pressed"]

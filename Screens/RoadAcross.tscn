@@ -1,0 +1,98 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://ClickableArea.gd" type="Script" id=1]
+[ext_resource path="res://Sprites/Backgrounds/roadacross.png" type="Texture" id=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+
+
+func _on_Left_clicked():
+	ScreenManager.change_screen(\"res://Screens/RoadAcrossLeft.tscn\")
+
+
+func _on_Right_clicked():
+	ScreenManager.change_screen(\"res://Screens/RoadAcrossRight.tscn\")
+
+
+func _on_Back_clicked():
+	ScreenManager.change_screen(\"res://Screens/WitchHouseFront.tscn\")
+
+
+func _on_House_clicked():
+	if WorldData.looked_left and WorldData.looked_right:
+		WorldData.looked_left = false
+		WorldData.looked_right = false
+		ScreenManager.change_screen(\"res://Screens/MyHouseFront.tscn\")
+	else:
+		# die
+		ScreenManager.change_screen(\"res://Screens/HitByTruck.tscn\")
+		Helpers.respawn_scene = \"res://Screens/RoadAcross.tscn\"
+"
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 204, 452 )
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 1001, 100 )
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 460, 266 )
+
+[node name="Screen" type="Node2D"]
+script = SubResource( 1 )
+
+[node name="BG" type="Sprite" parent="."]
+texture = ExtResource( 2 )
+centered = false
+
+[node name="Left" type="Area2D" parent="."]
+position = Vector2( 185, 456 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "left"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Left"]
+shape = SubResource( 2 )
+
+[node name="Right" type="Area2D" parent="."]
+position = Vector2( 1732, 456 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "right"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Right"]
+shape = SubResource( 2 )
+
+[node name="Back" type="Area2D" parent="."]
+position = Vector2( 958, 1013 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "turnaround"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Back"]
+shape = SubResource( 3 )
+
+[node name="House" type="Area2D" parent="."]
+position = Vector2( 952, 214 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "forward"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="House"]
+position = Vector2( 0, 57 )
+shape = SubResource( 4 )
+
+[connection signal="clicked" from="Left" to="." method="_on_Left_clicked"]
+[connection signal="clicked" from="Right" to="." method="_on_Right_clicked"]
+[connection signal="clicked" from="Back" to="." method="_on_Back_clicked"]
+[connection signal="clicked" from="House" to="." method="_on_House_clicked"]

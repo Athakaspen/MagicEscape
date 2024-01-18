@@ -1,0 +1,90 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://ClickableArea.gd" type="Script" id=1]
+[ext_resource path="res://Sprites/Backgrounds/myhousefront.png" type="Texture" id=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+
+
+func _on_Door_clicked():
+	ScreenManager.change_screen(\"res://Screens/MyHouseInside.tscn\")
+
+
+func _on_Back_clicked():
+	ScreenManager.change_screen(\"res://Screens/RoadFront.tscn\")
+
+
+func _on_Left_clicked():
+	ScreenManager.change_screen(\"res://Screens/RoadRight.tscn\")
+
+
+func _on_Right_clicked():
+	ScreenManager.change_screen(\"res://Screens/RoadLeft.tscn\")
+"
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 100, 190 )
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 995, 100 )
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 194, 440 )
+
+[node name="Screen" type="Node2D"]
+script = SubResource( 1 )
+
+[node name="BG" type="Sprite" parent="."]
+texture = ExtResource( 2 )
+centered = false
+
+[node name="Door" type="Area2D" parent="."]
+position = Vector2( 981, 525 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "forward"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Door"]
+shape = SubResource( 2 )
+
+[node name="Back" type="Area2D" parent="."]
+position = Vector2( 956, 996 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "turnaround"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Back"]
+shape = SubResource( 3 )
+
+[node name="Left" type="Area2D" parent="."]
+position = Vector2( 182, 440 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "left"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Left"]
+shape = SubResource( 4 )
+
+[node name="Right" type="Area2D" parent="."]
+position = Vector2( 1733, 440 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "right"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Right"]
+shape = SubResource( 4 )
+
+[connection signal="clicked" from="Door" to="." method="_on_Door_clicked"]
+[connection signal="clicked" from="Back" to="." method="_on_Back_clicked"]
+[connection signal="clicked" from="Left" to="." method="_on_Left_clicked"]
+[connection signal="clicked" from="Right" to="." method="_on_Right_clicked"]

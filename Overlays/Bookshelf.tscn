@@ -1,0 +1,207 @@
+[gd_scene load_steps=17 format=2]
+
+[ext_resource path="res://Sprites/Objects/bookshelf-book2.png" type="Texture" id=1]
+[ext_resource path="res://Sprites/Objects/bookshelf-book3.png" type="Texture" id=2]
+[ext_resource path="res://Sprites/Overlays/bookshelf-empty.png" type="Texture" id=3]
+[ext_resource path="res://Sprites/Objects/bookshelf-book1.png" type="Texture" id=4]
+[ext_resource path="res://Sprites/Objects/bookshelf-book4.png" type="Texture" id=5]
+[ext_resource path="res://Overlays/BookshelfBook.gd" type="Script" id=6]
+[ext_resource path="res://Sprites/Objects/bookshelf-book11.png" type="Texture" id=7]
+[ext_resource path="res://Sprites/Objects/bookshelf-book5.png" type="Texture" id=8]
+[ext_resource path="res://Sprites/Objects/bookshelf-book7.png" type="Texture" id=9]
+[ext_resource path="res://Sprites/Objects/bookshelf-book10.png" type="Texture" id=10]
+[ext_resource path="res://Sprites/Objects/bookshelf-book9.png" type="Texture" id=11]
+[ext_resource path="res://Sprites/Objects/bookshelf-book13.png" type="Texture" id=12]
+[ext_resource path="res://Sprites/Objects/bookshelf-book8.png" type="Texture" id=13]
+[ext_resource path="res://Sprites/Objects/bookshelf-book6.png" type="Texture" id=14]
+[ext_resource path="res://Sprites/Objects/bookshelf-book12.png" type="Texture" id=15]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends TextureRect
+
+func _ready():
+	MouseHelper.set_cursor(\"hand\", CURSOR_POINTING_HAND)
+
+func check_success():
+	if check_asc() or check_desc():
+		WorldData.emit_signal(\"bookshelf_organized\")
+		get_parent().queue_free()
+
+func check_asc():
+	var i := 1
+	for child in $HBoxContainer.get_children():
+		if child.name == 'book' + str(i):
+			i+=1
+			continue
+		else:
+			return false
+	return true
+
+func check_desc():
+	var i := $HBoxContainer.get_child_count()
+	for child in $HBoxContainer.get_children():
+		if child.name == 'book' + str(i):
+			i-=1
+			continue
+		else:
+			return false
+	return true
+"
+
+[node name="Bookshelf" type="TextureRect"]
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource( 3 )
+script = SubResource( 1 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_left = 347.0
+margin_top = 753.0
+margin_right = 1542.0
+margin_bottom = 1435.0
+rect_scale = Vector2( 1, -1 )
+custom_constants/separation = 0
+
+[node name="book1" type="TextureButton" parent="HBoxContainer"]
+margin_right = 70.0
+margin_bottom = 242.0
+mouse_default_cursor_shape = 2
+size_flags_vertical = 0
+texture_normal = ExtResource( 4 )
+script = ExtResource( 6 )
+
+[node name="book2" type="TextureButton" parent="HBoxContainer"]
+margin_left = 70.0
+margin_right = 165.0
+margin_bottom = 326.0
+mouse_default_cursor_shape = 2
+size_flags_vertical = 0
+texture_normal = ExtResource( 1 )
+script = ExtResource( 6 )
+
+[node name="book3" type="TextureButton" parent="HBoxContainer"]
+margin_left = 165.0
+margin_right = 258.0
+margin_bottom = 363.0
+mouse_default_cursor_shape = 2
+size_flags_vertical = 0
+texture_normal = ExtResource( 2 )
+script = ExtResource( 6 )
+
+[node name="book4" type="TextureButton" parent="HBoxContainer"]
+margin_left = 258.0
+margin_right = 301.0
+margin_bottom = 394.0
+mouse_default_cursor_shape = 2
+size_flags_vertical = 0
+texture_normal = ExtResource( 5 )
+script = ExtResource( 6 )
+
+[node name="book5" type="TextureButton" parent="HBoxContainer"]
+margin_left = 301.0
+margin_right = 357.0
+margin_bottom = 416.0
+mouse_default_cursor_shape = 2
+size_flags_vertical = 0
+texture_normal = ExtResource( 8 )
+script = ExtResource( 6 )
+
+[node name="book6" type="TextureButton" parent="HBoxContainer"]
+margin_left = 357.0
+margin_right = 419.0
+margin_bottom = 430.0
+mouse_default_cursor_shape = 2
+size_flags_vertical = 0
+texture_normal = ExtResource( 14 )
+script = ExtResource( 6 )
+
+[node name="book7" type="TextureButton" parent="HBoxContainer"]
+margin_left = 419.0
+margin_right = 514.0
+margin_bottom = 436.0
+mouse_default_cursor_shape = 2
+size_flags_vertical = 0
+texture_normal = ExtResource( 9 )
+script = ExtResource( 6 )
+
+[node name="book8" type="TextureButton" parent="HBoxContainer"]
+margin_left = 514.0
+margin_right = 648.0
+margin_bottom = 480.0
+mouse_default_cursor_shape = 2
+size_flags_vertical = 0
+texture_normal = ExtResource( 13 )
+script = ExtResource( 6 )
+
+[node name="book9" type="TextureButton" parent="HBoxContainer"]
+margin_left = 648.0
+margin_right = 693.0
+margin_bottom = 511.0
+mouse_default_cursor_shape = 2
+size_flags_vertical = 0
+texture_normal = ExtResource( 11 )
+script = ExtResource( 6 )
+
+[node name="book10" type="TextureButton" parent="HBoxContainer"]
+margin_left = 693.0
+margin_right = 827.0
+margin_bottom = 527.0
+mouse_default_cursor_shape = 2
+size_flags_vertical = 0
+texture_normal = ExtResource( 10 )
+script = ExtResource( 6 )
+
+[node name="book11" type="TextureButton" parent="HBoxContainer"]
+margin_left = 827.0
+margin_right = 922.0
+margin_bottom = 590.0
+mouse_default_cursor_shape = 2
+size_flags_vertical = 0
+texture_normal = ExtResource( 7 )
+script = ExtResource( 6 )
+
+[node name="book12" type="TextureButton" parent="HBoxContainer"]
+margin_left = 922.0
+margin_right = 991.0
+margin_bottom = 644.0
+mouse_default_cursor_shape = 2
+size_flags_vertical = 0
+texture_normal = ExtResource( 15 )
+script = ExtResource( 6 )
+
+[node name="book13" type="TextureButton" parent="HBoxContainer"]
+margin_left = 991.0
+margin_right = 1196.0
+margin_bottom = 678.0
+mouse_default_cursor_shape = 2
+size_flags_vertical = 0
+texture_normal = ExtResource( 12 )
+script = ExtResource( 6 )
+
+[connection signal="button_down" from="HBoxContainer/book1" to="HBoxContainer/book1" method="_on_button_down"]
+[connection signal="button_up" from="HBoxContainer/book1" to="HBoxContainer/book1" method="_on_button_up"]
+[connection signal="button_down" from="HBoxContainer/book2" to="HBoxContainer/book2" method="_on_button_down"]
+[connection signal="button_up" from="HBoxContainer/book2" to="HBoxContainer/book2" method="_on_button_up"]
+[connection signal="button_down" from="HBoxContainer/book3" to="HBoxContainer/book3" method="_on_button_down"]
+[connection signal="button_up" from="HBoxContainer/book3" to="HBoxContainer/book3" method="_on_button_up"]
+[connection signal="button_down" from="HBoxContainer/book4" to="HBoxContainer/book4" method="_on_button_down"]
+[connection signal="button_up" from="HBoxContainer/book4" to="HBoxContainer/book4" method="_on_button_up"]
+[connection signal="button_down" from="HBoxContainer/book5" to="HBoxContainer/book5" method="_on_button_down"]
+[connection signal="button_up" from="HBoxContainer/book5" to="HBoxContainer/book5" method="_on_button_up"]
+[connection signal="button_down" from="HBoxContainer/book6" to="HBoxContainer/book6" method="_on_button_down"]
+[connection signal="button_up" from="HBoxContainer/book6" to="HBoxContainer/book6" method="_on_button_up"]
+[connection signal="button_down" from="HBoxContainer/book7" to="HBoxContainer/book7" method="_on_button_down"]
+[connection signal="button_up" from="HBoxContainer/book7" to="HBoxContainer/book7" method="_on_button_up"]
+[connection signal="button_down" from="HBoxContainer/book8" to="HBoxContainer/book8" method="_on_button_down"]
+[connection signal="button_up" from="HBoxContainer/book8" to="HBoxContainer/book8" method="_on_button_up"]
+[connection signal="button_down" from="HBoxContainer/book9" to="HBoxContainer/book9" method="_on_button_down"]
+[connection signal="button_up" from="HBoxContainer/book9" to="HBoxContainer/book9" method="_on_button_up"]
+[connection signal="button_down" from="HBoxContainer/book10" to="HBoxContainer/book10" method="_on_button_down"]
+[connection signal="button_up" from="HBoxContainer/book10" to="HBoxContainer/book10" method="_on_button_up"]
+[connection signal="button_down" from="HBoxContainer/book11" to="HBoxContainer/book11" method="_on_button_down"]
+[connection signal="button_up" from="HBoxContainer/book11" to="HBoxContainer/book11" method="_on_button_up"]
+[connection signal="button_down" from="HBoxContainer/book12" to="HBoxContainer/book12" method="_on_button_down"]
+[connection signal="button_up" from="HBoxContainer/book12" to="HBoxContainer/book12" method="_on_button_up"]
+[connection signal="button_down" from="HBoxContainer/book13" to="HBoxContainer/book13" method="_on_button_down"]
+[connection signal="button_up" from="HBoxContainer/book13" to="HBoxContainer/book13" method="_on_button_up"]

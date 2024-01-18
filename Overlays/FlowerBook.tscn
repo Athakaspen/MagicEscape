@@ -1,0 +1,355 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://Fonts/Comic32-Italic.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Fonts/Comic28.tres" type="DynamicFont" id=2]
+[ext_resource path="res://Sprites/Overlays/flowers-p2.png" type="Texture" id=3]
+[ext_resource path="res://Sprites/Overlays/flowers-p3.png" type="Texture" id=4]
+[ext_resource path="res://Sprites/Overlays/flowers-p1.png" type="Texture" id=5]
+[ext_resource path="res://Sprites/Overlays/purple-book.png" type="Texture" id=6]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends TextureRect
+
+var cur_page = 0
+
+func _ready():
+	MouseHelper.set_cursor(\"left\", CURSOR_DRAG)
+	MouseHelper.set_cursor(\"right\", CURSOR_CAN_DROP)
+	update_pages()
+
+func _on_Left_pressed():
+	if cur_page > 0:
+		cur_page -= 1
+		update_pages()
+
+
+func _on_Right_pressed():
+	if cur_page < 2:
+		cur_page += 1
+		update_pages()
+
+func update_pages():
+	$P1.visible = cur_page == 0
+	$P2.visible = cur_page == 1
+	$P3.visible = cur_page == 2
+	$Left.visible = cur_page > 0
+	$Right.visible = cur_page < 2
+"
+
+[node name="Image" type="TextureRect"]
+margin_right = 40.0
+margin_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource( 6 )
+script = SubResource( 1 )
+
+[node name="P1" type="TextureRect" parent="."]
+visible = false
+margin_right = 40.0
+margin_bottom = 40.0
+texture = ExtResource( 5 )
+
+[node name="Intro" type="Label" parent="P1"]
+margin_left = 424.0
+margin_top = 163.0
+margin_right = 834.0
+margin_bottom = 573.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -1
+custom_fonts/font = ExtResource( 2 )
+text = "The Language of Flowers,
+or Floriography, refers to the meanings associated with flowers. For example, Birth Flowers are associated with the month in which a person was born, and make great, thoughtful gifts. Use this guide to pick the perfect gift for that special someone!"
+autowrap = true
+
+[node name="Jan" type="Label" parent="P1"]
+margin_left = 529.0
+margin_top = 577.0
+margin_right = 847.0
+margin_bottom = 627.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = ExtResource( 1 )
+text = "January: Carnation"
+
+[node name="Jan2" type="Label" parent="P1"]
+margin_left = 526.0
+margin_top = 633.0
+margin_right = 879.0
+margin_bottom = 772.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -7
+custom_fonts/font = ExtResource( 2 )
+text = "Carnations have long stems with small leaves partway up and one large flower on top."
+autowrap = true
+
+[node name="Feb" type="Label" parent="P1"]
+margin_left = 1025.0
+margin_top = 143.0
+margin_right = 1389.0
+margin_bottom = 193.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = ExtResource( 1 )
+text = "February: Purple Violet"
+
+[node name="Feb2" type="Label" parent="P1"]
+margin_left = 1022.0
+margin_top = 195.0
+margin_right = 1436.0
+margin_bottom = 334.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -7
+custom_fonts/font = ExtResource( 2 )
+text = "These redundantly-named flowers often grow wild, and have thin stems with bright purple blossoms. "
+autowrap = true
+
+[node name="Mar" type="Label" parent="P1"]
+margin_left = 987.0
+margin_top = 357.0
+margin_right = 1351.0
+margin_bottom = 407.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = ExtResource( 1 )
+text = "March: Daffodill"
+
+[node name="Mar2" type="Label" parent="P1"]
+margin_left = 920.0
+margin_top = 403.0
+margin_right = 1249.0
+margin_bottom = 577.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -7
+custom_fonts/font = ExtResource( 2 )
+text = "These bright yellow flowers with tall stems and long leaves bloom in mid-spring."
+align = 2
+autowrap = true
+
+[node name="Apr" type="Label" parent="P1"]
+margin_left = 1061.0
+margin_top = 569.0
+margin_right = 1425.0
+margin_bottom = 619.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = ExtResource( 1 )
+text = "April: Sweet Pea"
+
+[node name="Apr2" type="Label" parent="P1"]
+margin_left = 1059.0
+margin_top = 617.0
+margin_right = 1419.0
+margin_bottom = 756.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -7
+custom_fonts/font = ExtResource( 2 )
+text = "Sweet Pea flowers often grow in large groups, creating beautiful swaths of purple and green."
+autowrap = true
+
+[node name="P2" type="TextureRect" parent="."]
+visible = false
+margin_right = 40.0
+margin_bottom = 40.0
+texture = ExtResource( 3 )
+
+[node name="May" type="Label" parent="P2"]
+margin_left = 570.0
+margin_top = 144.0
+margin_right = 888.0
+margin_bottom = 239.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -9
+custom_fonts/font = ExtResource( 1 )
+text = "May: Lily
+of the Valley"
+
+[node name="May2" type="Label" parent="P2"]
+margin_left = 568.0
+margin_top = 227.0
+margin_right = 850.0
+margin_bottom = 366.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -7
+custom_fonts/font = ExtResource( 2 )
+text = "These iconic flowers grow long stems with many blossoms."
+autowrap = true
+
+[node name="Jun" type="Label" parent="P2"]
+margin_left = 556.0
+margin_top = 367.0
+margin_right = 920.0
+margin_bottom = 417.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = ExtResource( 1 )
+text = "June: Rose"
+
+[node name="Jun2" type="Label" parent="P2"]
+margin_left = 404.0
+margin_top = 412.0
+margin_right = 730.0
+margin_bottom = 565.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -7
+custom_fonts/font = ExtResource( 2 )
+text = "Possibly the most well-known flower of all time. But watch out for the thorny stem!"
+align = 2
+autowrap = true
+
+[node name="Jul" type="Label" parent="P2"]
+margin_left = 556.0
+margin_top = 582.0
+margin_right = 874.0
+margin_bottom = 633.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -9
+custom_fonts/font = ExtResource( 1 )
+text = "July: Delphinium"
+
+[node name="Jul2" type="Label" parent="P2"]
+margin_left = 557.0
+margin_top = 629.0
+margin_right = 835.0
+margin_bottom = 768.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -7
+custom_fonts/font = ExtResource( 2 )
+text = "Long, bright stems covered in tiny blue blossoms make these easy to spot."
+autowrap = true
+
+[node name="Aug" type="Label" parent="P2"]
+margin_left = 948.0
+margin_top = 199.0
+margin_right = 1312.0
+margin_bottom = 249.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = ExtResource( 1 )
+text = "August: Gladiolus"
+
+[node name="Aug2" type="Label" parent="P2"]
+margin_left = 881.0
+margin_top = 244.0
+margin_right = 1218.0
+margin_bottom = 416.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -7
+custom_fonts/font = ExtResource( 2 )
+text = "These flowers come in almost every color, but can be identified by the stem extending above the flower cluster."
+align = 2
+autowrap = true
+
+[node name="Sep" type="Label" parent="P2"]
+margin_left = 1070.0
+margin_top = 532.0
+margin_right = 1388.0
+margin_bottom = 583.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -9
+custom_fonts/font = ExtResource( 1 )
+text = "September: Aster"
+
+[node name="Sep2" type="Label" parent="P2"]
+margin_left = 1071.0
+margin_top = 579.0
+margin_right = 1390.0
+margin_bottom = 718.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -7
+custom_fonts/font = ExtResource( 2 )
+text = "These small, purple- pink flowers grow on bushes that can reach several feet in size."
+autowrap = true
+
+[node name="P3" type="TextureRect" parent="."]
+visible = false
+margin_right = 40.0
+margin_bottom = 40.0
+texture = ExtResource( 4 )
+
+[node name="Oct" type="Label" parent="P3"]
+margin_left = 532.0
+margin_top = 177.0
+margin_right = 850.0
+margin_bottom = 228.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -9
+custom_fonts/font = ExtResource( 1 )
+text = "October: Marigold"
+
+[node name="Oct2" type="Label" parent="P3"]
+margin_left = 533.0
+margin_top = 224.0
+margin_right = 836.0
+margin_bottom = 363.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -7
+custom_fonts/font = ExtResource( 2 )
+text = "Marigolds are some of the most brightly- colored flowers that bloom all season."
+autowrap = true
+
+[node name="Nov" type="Label" parent="P3"]
+margin_left = 363.0
+margin_top = 484.0
+margin_right = 727.0
+margin_bottom = 566.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -10
+custom_fonts/font = ExtResource( 1 )
+text = "November:
+Chrysanthemum"
+align = 2
+
+[node name="Nov2" type="Label" parent="P3"]
+margin_left = 397.0
+margin_top = 570.0
+margin_right = 723.0
+margin_bottom = 742.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -7
+custom_fonts/font = ExtResource( 2 )
+text = "These flowers come in many colors, but can be identified by the two large leaves near the head."
+align = 2
+autowrap = true
+
+[node name="Dec" type="Label" parent="P3"]
+margin_left = 1073.0
+margin_top = 183.0
+margin_right = 1391.0
+margin_bottom = 234.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -9
+custom_fonts/font = ExtResource( 1 )
+text = "December: Narcissus"
+
+[node name="Dec2" type="Label" parent="P3"]
+margin_left = 1074.0
+margin_top = 230.0
+margin_right = 1377.0
+margin_bottom = 369.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -7
+custom_fonts/font = ExtResource( 2 )
+text = "These flowers may look like Daffodils at first glance, but they are differentiated by white outer petals."
+autowrap = true
+
+[node name="Outro" type="Label" parent="P3"]
+margin_left = 943.0
+margin_top = 459.0
+margin_right = 1394.0
+margin_bottom = 775.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_constants/line_spacing = -7
+custom_fonts/font = ExtResource( 2 )
+text = "Hopefully this guide will help you be able to identify different birth flowers. Their meanings are much deeper than just representing a single month though, so be sure to read more about Floriography to learn the intricacies of each one!"
+autowrap = true
+
+[node name="Left" type="TextureButton" parent="."]
+margin_left = 298.0
+margin_top = 60.0
+margin_right = 888.0
+margin_bottom = 806.0
+mouse_default_cursor_shape = 6
+
+[node name="Right" type="TextureButton" parent="."]
+margin_left = 942.0
+margin_top = 60.0
+margin_right = 1513.0
+margin_bottom = 806.0
+mouse_default_cursor_shape = 7
+
+[connection signal="pressed" from="Left" to="." method="_on_Left_pressed"]
+[connection signal="pressed" from="Right" to="." method="_on_Right_pressed"]

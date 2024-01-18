@@ -1,0 +1,484 @@
+[gd_scene load_steps=29 format=2]
+
+[ext_resource path="res://Sprites/Backgrounds/rug.png" type="Texture" id=1]
+[ext_resource path="res://ClickableArea.gd" type="Script" id=2]
+[ext_resource path="res://Sprites/Backgrounds/rug-rolled.png" type="Texture" id=3]
+[ext_resource path="res://Sprites/Backgrounds/rug-rolled-open.png" type="Texture" id=4]
+[ext_resource path="res://Sprites/Objects/dial-wall.png" type="Texture" id=5]
+[ext_resource path="res://Sprites/Objects/dial-yellow.png" type="Texture" id=6]
+[ext_resource path="res://Sprites/Objects/dial-green.png" type="Texture" id=7]
+[ext_resource path="res://Sprites/Objects/dial-garden.png" type="Texture" id=8]
+[ext_resource path="res://Sprites/Objects/dial-purple.png" type="Texture" id=9]
+[ext_resource path="res://Sprites/Objects/dial-blue.png" type="Texture" id=10]
+[ext_resource path="res://Sprites/Objects/Light.png" type="Texture" id=11]
+[ext_resource path="res://Sprites/Objects/dial-orange.png" type="Texture" id=12]
+[ext_resource path="res://Sprites/Objects/dial-red.png" type="Texture" id=13]
+[ext_resource path="res://Sprites/Objects/dial-arcade.png" type="Texture" id=14]
+[ext_resource path="res://Sprites/Objects/trapdoor-cover.png" type="Texture" id=15]
+[ext_resource path="res://Sprites/Objects/dial-open.png" type="Texture" id=16]
+[ext_resource path="res://Sprites/Objects/RainbowDiskInDial.png" type="Texture" id=17]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+func _ready():
+	$Open.hide()
+	$Rolled.hide()
+	$Closed.show()
+	$Open/DialOpen.hide()
+	
+	update_dial()
+	update_lights()
+	
+	# signal to unlock trapdoor
+# warning-ignore:return_value_discarded
+	WorldData.connect(\"trapdoor_unlocked\", self, \"_on_trapdoor_unlock\")
+	
+	# only allow dial to open with rainbow disk
+	if WorldData.house_location in [\"red\", \"orange\", \"yellow\", \"green\", \"blue\", \"purple\", \"home\"] \\
+	or Inventory.has_item(\"rainbow-disk\"):
+		$Open/DialClosed/DialCase.visible = true
+	else: $Open/DialClosed/DialCase.visible = false
+	
+	# show rainbow disk in dial
+	if WorldData.house_location in [\"red\", \"orange\", \"yellow\", \"green\", \"blue\", \"purple\", \"home\"]:
+		$Open/DialOpen/RainbowDiskInDial.visible = true
+	else: $Open/DialOpen/RainbowDiskInDial.visible = false
+
+func update_dial() -> void:
+	# configure dial
+	if WorldData.house_location == \"wall\":
+		$Open/DialSprites/Wall.show()
+	else: $Open/DialSprites/Wall.hide()
+	if WorldData.house_location == \"garden\":
+		$Open/DialSprites/Garden.show()
+	else: $Open/DialSprites/Garden.hide()
+	if WorldData.house_location == \"arcade\":
+		$Open/DialSprites/Arcade.show()
+	else: $Open/DialSprites/Arcade.hide()
+	if WorldData.house_location == \"red\":
+		$Open/DialSprites/Red.show()
+	else: $Open/DialSprites/Red.hide()
+	if WorldData.house_location == \"orange\":
+		$Open/DialSprites/Orange.show()
+	else: $Open/DialSprites/Orange.hide()
+	if WorldData.house_location == \"yellow\":
+		$Open/DialSprites/Yellow.show()
+	else: $Open/DialSprites/Yellow.hide()
+	if WorldData.house_location == \"green\":
+		$Open/DialSprites/Green.show()
+	else: $Open/DialSprites/Green.hide()
+	if WorldData.house_location == \"blue\":
+		$Open/DialSprites/Blue.show()
+	else: $Open/DialSprites/Blue.hide()
+	if WorldData.house_location == \"purple\" or WorldData.house_location == \"home\":
+		$Open/DialSprites/Purple.show()
+	else: $Open/DialSprites/Purple.hide()
+	
+func update_lights() -> void:
+	if WorldData.house_location in [\"wall\",\"garden\",\"arcade\"]:
+		if WorldData.house_location == \"wall\":
+			$Open/LightSprites/Light1.modulate = Helpers.GREEN
+		else: $Open/LightSprites/Light1.modulate = Color.white
+		if WorldData.house_location == \"garden\":
+			$Open/LightSprites/Light2.modulate = Helpers.GREEN
+		else: $Open/LightSprites/Light2.modulate = Color.white
+		if WorldData.house_location == \"arcade\":
+			$Open/LightSprites/Light3.modulate = Helpers.GREEN
+		else: $Open/LightSprites/Light3.modulate = Color.white
+		# hide diamond
+		$Open/DiamondCover.show()
+		$Open/DialClosed/Diamond.hide()
+	else:
+		$Open/LightSprites/Light1.modulate = \\
+			Helpers.get_color_from_name(WorldData.color_code[0])
+		$Open/LightSprites/Light2.modulate = \\
+			Helpers.get_color_from_name(WorldData.color_code[1])
+		$Open/LightSprites/Light3.modulate = \\
+			Helpers.get_color_from_name(WorldData.color_code[2])
+		# show diamond
+		$Open/DiamondCover.hide()
+		$Open/DialClosed/Diamond.show()
+		# diamond color
+		if WorldData.house_location == 'home':
+			$Open/DiamondColor.modulate = Helpers.PURPLE
+		else:
+			$Open/DiamondColor.modulate = Helpers.get_color_from_name(WorldData.house_location)
+
+
+func _on_Back_clicked():
+	if $Open.visible or $Rolled.visible:
+		# close rug
+		$Open.hide()
+		$Rolled.hide()
+		$Closed.show()
+	else:
+		ScreenManager.change_screen(\"res://Screens/RoomNorth.tscn\")
+
+func _on_Rug_clicked():
+	# unroll rug, and open trapdoor if unlocked
+	if WorldData.is_trapdoor_locked: 
+		$Closed.hide()
+		$Rolled.show()
+	else:
+		$Closed.hide()
+		$Open.show()
+
+
+func _on_Roll_clicked():
+	# unroll rug
+	$Rolled.hide()
+	$Closed.show()
+
+
+func _on_Code_clicked():
+	# open lock overlay
+	ScreenManager.create_overlay(\"res://Overlays/TrapdoorLock.tscn\")
+
+func _on_trapdoor_unlock():
+	$Rolled.hide()
+	$Open.show()
+
+func _on_OpenDoor_clicked():
+	# close door and unroll mat
+	$Open.hide()
+	$Closed.show()
+
+
+func _on_Dial_clicked():
+	if Inventory.active_item == \"rainbow-disk\":
+		_on_DialCase_clicked()
+		MouseHelper.set_cursor(\"examine\")
+		return
+	
+	match WorldData.house_location:
+		\"wall\":
+			WorldData.house_location = \"garden\"
+		\"garden\":
+			WorldData.house_location = \"arcade\"
+		\"arcade\":
+			WorldData.house_location = \"wall\"
+		
+		\"red\":
+			WorldData.house_location = \"orange\"
+		\"orange\":
+			WorldData.house_location = \"yellow\"
+		\"yellow\":
+			WorldData.house_location = \"green\"
+		\"green\":
+			WorldData.house_location = \"blue\"
+		\"blue\":
+			WorldData.house_location = \"purple\"
+		\"purple\":
+			WorldData.house_location = \"red\"
+		
+		\"home\":
+#			Notifications.notify(\"I'm already home\")
+			WorldData.house_location = \"red\"
+		_:
+			assert(false, \"unexpected house location %s\" % WorldData.house_location)
+	
+	ScreenManager.do_screenflash()
+	
+	update_dial()
+	update_lights()
+
+
+func _on_Diamond_clicked():
+	if WorldData.house_location == 'home':
+		WorldData.input_color('purple')
+	else:
+		WorldData.input_color(WorldData.house_location)
+	update_lights()
+
+
+func _on_DialCase_clicked():
+	# open dial
+	$Open/DialClosed.hide()
+	$Open/DialOpen.show()
+
+func _on_OpenDial_clicked():
+	# close dial
+	$Open/DialClosed.show()
+	$Open/DialOpen.hide()
+	update_dial()
+	update_lights()
+
+
+func _on_DialRing_clicked():
+	if $Open/DialOpen/RainbowDiskInDial.visible == true:
+		# remove disk
+		Inventory.add_item(\"rainbow-disk\")
+		$Open/DialOpen/RainbowDiskInDial.visible = false
+		WorldData.house_location = \"garden\"
+		update_lights()
+	
+	elif Inventory.active_item == \"rainbow-disk\":
+		# place disk
+		Inventory.remove_item(\"rainbow-disk\")
+		$Open/DialOpen/RainbowDiskInDial.visible = true
+		WorldData.house_location = \"red\"
+		WorldData.color_code = [\"white\", \"white\", \"white\"]
+		WorldData.color_code_position = 0
+		update_lights()
+	
+	elif Inventory.active_item in [\"red-disk\", \"orange-disk\", \"yellow-disk\", \"green-disk\", \"blue-disk\", \"purple-disk\"]:
+		Notifications.notify(\"That disk won't do any good.\")
+	
+	elif Inventory.active_item == \"none\":
+		Notifications.notify(\"I could put something in here.\")
+	
+	else:
+		# other active item
+		Notifications.notify(\"That won't work.\")
+"
+
+[sub_resource type="RectangleShape2D" id=8]
+extents = Vector2( 288, 150 )
+
+[sub_resource type="RectangleShape2D" id=11]
+extents = Vector2( 17, 26 )
+
+[sub_resource type="CircleShape2D" id=10]
+radius = 30.1496
+
+[sub_resource type="RectangleShape2D" id=9]
+extents = Vector2( 36, 57 )
+
+[sub_resource type="RectangleShape2D" id=12]
+extents = Vector2( 58.5, 100 )
+
+[sub_resource type="CircleShape2D" id=13]
+radius = 85.0059
+
+[sub_resource type="RectangleShape2D" id=6]
+extents = Vector2( 551, 76 )
+
+[sub_resource type="RectangleShape2D" id=7]
+extents = Vector2( 248, 103 )
+
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 489, 395 )
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 1001, 82.5 )
+
+[node name="Rug" type="Node2D"]
+script = SubResource( 1 )
+
+[node name="Open" type="Node2D" parent="."]
+
+[node name="DialSprites" type="Node2D" parent="Open"]
+position = Vector2( 947, 570 )
+
+[node name="Wall" type="Sprite" parent="Open/DialSprites"]
+visible = false
+texture = ExtResource( 5 )
+
+[node name="Garden" type="Sprite" parent="Open/DialSprites"]
+visible = false
+texture = ExtResource( 8 )
+
+[node name="Arcade" type="Sprite" parent="Open/DialSprites"]
+visible = false
+texture = ExtResource( 14 )
+
+[node name="Red" type="Sprite" parent="Open/DialSprites"]
+visible = false
+texture = ExtResource( 13 )
+
+[node name="Orange" type="Sprite" parent="Open/DialSprites"]
+visible = false
+texture = ExtResource( 12 )
+
+[node name="Yellow" type="Sprite" parent="Open/DialSprites"]
+visible = false
+texture = ExtResource( 6 )
+
+[node name="Green" type="Sprite" parent="Open/DialSprites"]
+visible = false
+texture = ExtResource( 7 )
+
+[node name="Blue" type="Sprite" parent="Open/DialSprites"]
+visible = false
+texture = ExtResource( 10 )
+
+[node name="Purple" type="Sprite" parent="Open/DialSprites"]
+visible = false
+texture = ExtResource( 9 )
+
+[node name="LightSprites" type="Node2D" parent="Open"]
+
+[node name="Light1" type="Sprite" parent="Open/LightSprites"]
+position = Vector2( 865, 471 )
+texture = ExtResource( 11 )
+
+[node name="Light2" type="Sprite" parent="Open/LightSprites"]
+position = Vector2( 941, 471 )
+texture = ExtResource( 11 )
+
+[node name="Light3" type="Sprite" parent="Open/LightSprites"]
+position = Vector2( 1025, 471 )
+texture = ExtResource( 11 )
+
+[node name="DiamondColor" type="Sprite" parent="Open"]
+position = Vector2( 1109.5, 619.5 )
+scale = Vector2( 2.24324, 3.25 )
+texture = ExtResource( 11 )
+
+[node name="BG-open" type="Sprite" parent="Open"]
+texture = ExtResource( 4 )
+centered = false
+
+[node name="OpenDoor" type="Area2D" parent="Open"]
+position = Vector2( 945, 149 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "hand"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Open/OpenDoor"]
+shape = SubResource( 8 )
+
+[node name="DiamondCover" type="Sprite" parent="Open"]
+position = Vector2( 1109, 620 )
+texture = ExtResource( 15 )
+
+[node name="DialClosed" type="Node2D" parent="Open"]
+
+[node name="DialCase" type="Area2D" parent="Open/DialClosed"]
+position = Vector2( 1025, 618 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "hand"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Open/DialClosed/DialCase"]
+shape = SubResource( 11 )
+
+[node name="Dial" type="Area2D" parent="Open/DialClosed"]
+position = Vector2( 944, 620 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "rotate"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Open/DialClosed/Dial"]
+shape = SubResource( 10 )
+
+[node name="Diamond" type="Area2D" parent="Open/DialClosed"]
+position = Vector2( 1110, 621 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "hand"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Open/DialClosed/Diamond"]
+shape = SubResource( 9 )
+
+[node name="DialOpen" type="Node2D" parent="Open"]
+visible = false
+
+[node name="DialOpenSprite" type="Sprite" parent="Open/DialOpen"]
+position = Vector2( 887, 623.5 )
+texture = ExtResource( 16 )
+
+[node name="RainbowDiskInDial" type="Sprite" parent="Open/DialOpen"]
+position = Vector2( 944.5, 620.5 )
+texture = ExtResource( 17 )
+
+[node name="OpenDial" type="Area2D" parent="Open/DialOpen"]
+position = Vector2( 781, 621 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "hand"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Open/DialOpen/OpenDial"]
+position = Vector2( -5.5, 0 )
+shape = SubResource( 12 )
+
+[node name="DialRing" type="Area2D" parent="Open/DialOpen"]
+position = Vector2( 945, 620 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Open/DialOpen/DialRing"]
+shape = SubResource( 13 )
+
+[node name="Rolled" type="Node2D" parent="."]
+visible = false
+
+[node name="BG-rolled" type="Sprite" parent="Rolled"]
+texture = ExtResource( 3 )
+centered = false
+
+[node name="Roll" type="Area2D" parent="Rolled"]
+position = Vector2( 943, 110 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "hand"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Rolled/Roll"]
+shape = SubResource( 6 )
+
+[node name="Code" type="Area2D" parent="Rolled"]
+position = Vector2( 945, 714 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Rolled/Code"]
+shape = SubResource( 7 )
+
+[node name="Closed" type="Node2D" parent="."]
+visible = false
+
+[node name="BG" type="Sprite" parent="Closed"]
+texture = ExtResource( 1 )
+centered = false
+
+[node name="Rug" type="Area2D" parent="Closed"]
+position = Vector2( 930, 400 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "hand"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Closed/Rug"]
+position = Vector2( 0, 61 )
+shape = SubResource( 5 )
+
+[node name="Back" type="Area2D" parent="."]
+position = Vector2( 958, 1013 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "back"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Back"]
+position = Vector2( 0, 17.5 )
+shape = SubResource( 4 )
+
+[connection signal="clicked" from="Open/OpenDoor" to="." method="_on_OpenDoor_clicked"]
+[connection signal="clicked" from="Open/DialClosed/DialCase" to="." method="_on_DialCase_clicked"]
+[connection signal="clicked" from="Open/DialClosed/Dial" to="." method="_on_Dial_clicked"]
+[connection signal="clicked" from="Open/DialClosed/Diamond" to="." method="_on_Diamond_clicked"]
+[connection signal="clicked" from="Open/DialOpen/OpenDial" to="." method="_on_OpenDial_clicked"]
+[connection signal="clicked" from="Open/DialOpen/DialRing" to="." method="_on_DialRing_clicked"]
+[connection signal="clicked" from="Rolled/Roll" to="." method="_on_Roll_clicked"]
+[connection signal="clicked" from="Rolled/Code" to="." method="_on_Code_clicked"]
+[connection signal="clicked" from="Closed/Rug" to="." method="_on_Rug_clicked"]
+[connection signal="clicked" from="Back" to="." method="_on_Back_clicked"]

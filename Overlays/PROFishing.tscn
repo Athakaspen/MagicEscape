@@ -1,0 +1,399 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://Sprites/Overlays/PRO-Fishing.png" type="Texture" id=1]
+[ext_resource path="res://Sprites/Overlays/PRO-Fishing-bg.png" type="Texture" id=2]
+[ext_resource path="res://Sprites/Overlays/PRO-Fishing-screenmask.png" type="Texture" id=3]
+[ext_resource path="res://Sprites/Objects/PRO-Fishing-seaweed.png" type="Texture" id=4]
+[ext_resource path="res://Sprites/Objects/PRO-Fishing-hook.png" type="Texture" id=5]
+[ext_resource path="res://Fonts/Comic32.tres" type="DynamicFont" id=7]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends TextureRect
+
+const GAME_LENGTH = 30 # seconds
+
+# limits of background movement in Y axis
+const SCREEN_MIN = 0
+const SCREEN_MAX = 680
+const SCREEN_HOOK_OFFSET = 400
+const SCREEN_LERP_WEIGHT = 0.03
+
+const HOOK_MIN = 100
+const HOOK_MAX = 1350
+const ACCEL = 600 # pixels/s/s
+const DECEL = 0.05 # not well defined
+const MAX_SPEED = 300 # pixels/s
+
+const SMOL_SPAWN_RATE = 1.5 # sec
+const SMOL_SPAWN_NOISE = 0.6 # random timer mult
+const SMOL_SPAWN_MIN = 280
+const SMOL_SPAWN_MAX = 1000
+const SMOL_SPEED_MIN = 250
+const SMOL_SPEED_MAX = 300
+
+const MID_SPAWN_RATE = 1.6 # sec
+const MID_SPAWN_NOISE = 0.4 # random timer mult
+const MID_SPAWN_MIN = 500
+const MID_SPAWN_MAX = 1200
+const MID_SPEED_MIN = 120
+const MID_SPEED_MAX = 250
+
+const POG_SPAWN_RATE = 3.0 # sec
+const POG_SPAWN_NOISE = 0.2 # random timer mult
+const POG_SPAWN_MIN = 800
+const POG_SPAWN_MAX = 1300
+const POG_SPEED_MIN = 100
+const POG_SPEED_MAX = 180
+
+const KOI_SPAWN_RATE = 20.0 # sec
+const KOI_SPAWN_NOISE = 0.5 # random timer mult
+const KOI_SPAWN_MIN = 500
+const KOI_SPAWN_MAX = 1300
+const KOI_SPEED_MIN = 150
+const KOI_SPEED_MAX = 220
+
+var SmolFish_res = preload(\"res://Overlays/SmolFish.tscn\")
+var MidFish_res = preload(\"res://Overlays/MidFish.tscn\")
+var PogFish_res = preload(\"res://Overlays/PogFish.tscn\")
+var KoiFish_res = preload(\"res://Overlays/KoiFish.tscn\")
+
+var hook_vel = 0 # pixels/s
+
+var is_up_pressed = false
+var is_down_pressed = false
+
+var fish_on_hook = false
+var game_over = false
+
+var score:int = 0
+
+onready var Overlay = get_parent().get_parent().get_parent()
+onready var ScreenView = $ScreenView
+onready var Hook = $WaterBG/Hook
+onready var HookJoint = $WaterBG/Hook/HookJoint
+onready var GameTimer = $Timer
+onready var TimerLabel = $ScreenView/TimerLabel
+
+func _ready():
+	MouseHelper.set_cursor('up', Input.CURSOR_CROSS)
+	MouseHelper.set_cursor('down', Input.CURSOR_HSIZE)
+	
+	MouseHelper.set_cursor('back', Input.CURSOR_IBEAM)
+	
+	GameTimer.start(GAME_LENGTH)
+	$ScreenView/GameCamera.current = true
+	
+	init_spawns()
+
+func init_spawns():
+	$SmolTimerHigh.start(0.1)
+	$SmolTimer.start(0.2)
+	$MidTimer.start(0.3)
+	$PogTimer.start(0.6)
+	$KoiTimer.start(8.0 + rand_range(0, 40))
+
+func _process(delta):
+	
+	# hook movement
+	if !game_over:
+		hook_movement(delta)
+	
+	# Screen movement
+	ScreenView.rect_position.y = clamp(\\
+		lerp(ScreenView.rect_position.y, (Hook.position.y - SCREEN_HOOK_OFFSET), SCREEN_LERP_WEIGHT),\\
+		SCREEN_MIN, SCREEN_MAX)
+	
+	# Timer & score
+	TimerLabel.text = \"Timer: %.2f\" % stepify(GameTimer.time_left, 0.042)
+	if GameTimer.is_stopped():
+		TimerLabel.text = \"Time's up!\"
+	$ScreenView/TicketsLabel.text = \"Tickets: \" + str(score)
+	
+	# catch fish
+	if Hook.position.y < 160 and fish_on_hook:
+		score_fish()
+
+
+func hook_movement(delta):
+	if is_up_pressed:
+		if hook_vel > 0:
+			hook_vel = lerp(hook_vel, 0, DECEL)
+		hook_vel -= ACCEL * delta
+	elif is_down_pressed:
+		if hook_vel < 0:
+			hook_vel = lerp(hook_vel, 0, DECEL)
+		hook_vel += ACCEL * delta
+	else:
+		hook_vel = lerp(hook_vel, 0, DECEL)
+	
+	if !fish_on_hook:
+		hook_vel = clamp(hook_vel, -MAX_SPEED, MAX_SPEED)
+	else:
+		hook_vel = clamp(hook_vel, -MAX_SPEED * 1.4, MAX_SPEED)
+	
+	
+	Hook.position.y = clamp(Hook.position.y + hook_vel * delta, HOOK_MIN, HOOK_MAX)
+
+# button inputs
+func _on_UpButton_button_down():
+	is_up_pressed = true
+func _on_UpButton_button_up():
+	is_up_pressed = false
+func _on_DownButton_button_down():
+	is_down_pressed = true
+func _on_DownButton_button_up():
+	is_down_pressed = false
+
+
+func _on_HookArea_area_entered(area):
+	if area.is_in_group('FishMouth'):
+		catch_fish(area.get_parent())
+
+func catch_fish(fish:RigidBody2D):
+	# only catch one at a time
+	if fish_on_hook: return
+	if game_over: return
+	
+	Notifications.notify(\"Got One! Reel 'er in!\")
+	fish_on_hook = true
+	HookJoint.node_b = HookJoint.get_path_to(fish)
+	fish.caught = true
+	fish.gravity_scale = 3
+	
+
+func score_fish():
+	var fish = HookJoint.get_node(HookJoint.node_b)
+	HookJoint.node_b = \"\"
+	score += fish.value
+	fish.queue_free()
+	fish_on_hook = false
+
+
+func _on_BackButton_pressed():
+	if game_over:
+		Overlay.queue_free()
+		Inventory.add_tickets(score)
+
+
+func _on_SmolTimer_timeout():
+	spawn_fish(\"smol\", SMOL_SPAWN_MIN, SMOL_SPAWN_MAX, SMOL_SPEED_MIN, SMOL_SPEED_MAX)
+	$SmolTimer.start(SMOL_SPAWN_RATE * (1 + rand_range(-SMOL_SPAWN_NOISE, SMOL_SPAWN_NOISE)))
+	
+# extra smols up top
+func _on_SmolTimerHigh_timeout():
+	spawn_fish(\"smol\", SMOL_SPAWN_MIN, SMOL_SPAWN_MIN + 300, SMOL_SPEED_MIN, SMOL_SPEED_MAX)
+	$SmolTimerHigh.start(SMOL_SPAWN_RATE * (1 + rand_range(-SMOL_SPAWN_NOISE, SMOL_SPAWN_NOISE)))
+
+func _on_MidTimer_timeout():
+	spawn_fish(\"mid\", MID_SPAWN_MIN, MID_SPAWN_MAX, MID_SPEED_MIN, MID_SPEED_MAX)
+	$MidTimer.start(MID_SPAWN_RATE * (1 + rand_range(-MID_SPAWN_NOISE, MID_SPAWN_NOISE)))
+
+func _on_PogTimer_timeout():
+	spawn_fish(\"pog\", POG_SPAWN_MIN, POG_SPAWN_MAX, POG_SPEED_MIN, POG_SPEED_MAX)
+	$PogTimer.start(POG_SPAWN_RATE * (1 + rand_range(-POG_SPAWN_NOISE, POG_SPAWN_NOISE)))
+
+func _on_KoiTimer_timeout():
+	spawn_fish(\"koi\", KOI_SPAWN_MIN, KOI_SPAWN_MAX, KOI_SPEED_MIN, KOI_SPEED_MAX)
+	$KoiTimer.start(KOI_SPAWN_RATE * (1 + rand_range(-KOI_SPAWN_NOISE, KOI_SPAWN_NOISE)))
+
+func spawn_fish(type:String, min_h:float, max_h:float, min_s:float, max_s:float):
+	var fish : RigidBody2D
+	match type:
+		\"smol\":
+			fish = SmolFish_res.instance()
+		\"mid\":
+			fish = MidFish_res.instance()
+		\"pog\":
+			fish = PogFish_res.instance()
+		\"koi\":
+			fish = KoiFish_res.instance()
+	
+	if randf() > 0.5:
+		# right
+		fish.position.x = 1160
+		fish.speed = rand_range(min_s, max_s)
+		fish.direction = Vector2.LEFT
+	
+	else:
+		# left
+		fish.position.x = 370
+		fish.speed = rand_range(min_s, max_s)
+		fish.direction = Vector2.RIGHT
+		fish.scale.x = -1
+		fish.get_node(\"Sprite\").scale.y = -1
+	
+	
+	fish.position.y = rand_range(min_h, max_h)
+	
+	$WaterBG.add_child(fish)
+
+
+# game over
+func _on_Timer_timeout():
+	game_over = true
+	if score < 10:
+		Notifications.notify(\"%s tickets... could do better.\" % str(score))
+	elif score < 20:
+		Notifications.notify(\"%s tickets, not bad.\" % str(score))
+	elif score < 30:
+		Notifications.notify(\"%s tickets, sweet!\" % str(score))
+	else:
+		Notifications.notify(\"Woohoo, %s tickets!!!\" % str(score))
+
+
+"
+
+[sub_resource type="GDScript" id=2]
+script/source = "extends Line2D
+
+func _ready():
+	self.set_as_toplevel(true)
+	self.position = Vector2.ZERO
+
+func _process(_delta):
+	points[0] = get_parent().global_position + Vector2.UP * 2000
+	points[1] = get_parent().global_position
+"
+
+[sub_resource type="CircleShape2D" id=3]
+radius = 11.0
+
+[sub_resource type="CircleShape2D" id=6]
+
+[node name="PROFishing" type="TextureRect"]
+script = SubResource( 1 )
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 10.0
+one_shot = true
+
+[node name="SmolTimer" type="Timer" parent="."]
+
+[node name="SmolTimerHigh" type="Timer" parent="."]
+
+[node name="MidTimer" type="Timer" parent="."]
+
+[node name="PogTimer" type="Timer" parent="."]
+
+[node name="KoiTimer" type="Timer" parent="."]
+
+[node name="WaterBG" type="Sprite" parent="."]
+show_behind_parent = true
+light_mask = 2
+z_index = -100
+texture = ExtResource( 2 )
+centered = false
+
+[node name="Hook" type="Sprite" parent="WaterBG"]
+position = Vector2( 761, 200 )
+z_index = 50
+texture = ExtResource( 5 )
+offset = Vector2( -2, 18 )
+
+[node name="Line" type="Line2D" parent="WaterBG/Hook"]
+show_behind_parent = true
+light_mask = 2
+position = Vector2( -747, -197 )
+z_index = -1
+points = PoolVector2Array( 747, 198, 747, 32 )
+width = 3.0
+default_color = Color( 1, 1, 1, 1 )
+script = SubResource( 2 )
+
+[node name="HookArea" type="Area2D" parent="WaterBG/Hook"]
+position = Vector2( -2, 31 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WaterBG/Hook/HookArea"]
+shape = SubResource( 3 )
+
+[node name="HookBody" type="StaticBody2D" parent="WaterBG/Hook/HookArea"]
+visible = false
+position = Vector2( -4, 30 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WaterBG/Hook/HookArea/HookBody"]
+shape = SubResource( 6 )
+
+[node name="HookJoint" type="PinJoint2D" parent="WaterBG/Hook"]
+position = Vector2( -5, 32 )
+node_a = NodePath("../HookArea/HookBody")
+bias = 0.9
+
+[node name="Seaweed" type="Sprite" parent="WaterBG"]
+light_mask = 2
+position = Vector2( 422, 1144 )
+z_index = 60
+texture = ExtResource( 4 )
+centered = false
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="ScreenView" type="TextureRect" parent="."]
+margin_top = -3.0
+margin_right = 1920.0
+margin_bottom = 1077.0
+texture = ExtResource( 1 )
+
+[node name="ScreenMask" type="Light2D" parent="ScreenView"]
+texture = ExtResource( 3 )
+offset = Vector2( 960, 579 )
+mode = 3
+range_layer_min = -512
+range_layer_max = 512
+range_item_cull_mask = 2
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="TimerLabel" type="Label" parent="ScreenView"]
+margin_left = 1135.0
+margin_top = 381.0
+margin_right = 1392.0
+margin_bottom = 427.0
+custom_fonts/font = ExtResource( 7 )
+text = "Timer: 10.0"
+
+[node name="TicketsLabel" type="Label" parent="ScreenView"]
+margin_left = 1137.0
+margin_top = 438.0
+margin_right = 1318.0
+margin_bottom = 484.0
+custom_fonts/font = ExtResource( 7 )
+text = "Tickets: 69"
+
+[node name="UpButton" type="TextureButton" parent="ScreenView"]
+margin_left = 1103.0
+margin_top = 54.0
+margin_right = 1372.0
+margin_bottom = 340.0
+mouse_default_cursor_shape = 3
+
+[node name="DownButton" type="TextureButton" parent="ScreenView"]
+margin_left = 1103.0
+margin_top = 528.0
+margin_right = 1372.0
+margin_bottom = 814.0
+mouse_default_cursor_shape = 10
+
+[node name="BackButton" type="TextureButton" parent="ScreenView"]
+margin_left = -26.0
+margin_top = 899.0
+margin_right = 1932.0
+margin_bottom = 1437.0
+mouse_default_cursor_shape = 1
+
+[node name="GameCamera" type="Camera2D" parent="ScreenView"]
+anchor_mode = 0
+
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
+[connection signal="timeout" from="SmolTimer" to="." method="_on_SmolTimer_timeout"]
+[connection signal="timeout" from="SmolTimerHigh" to="." method="_on_SmolTimerHigh_timeout"]
+[connection signal="timeout" from="MidTimer" to="." method="_on_MidTimer_timeout"]
+[connection signal="timeout" from="PogTimer" to="." method="_on_PogTimer_timeout"]
+[connection signal="timeout" from="KoiTimer" to="." method="_on_KoiTimer_timeout"]
+[connection signal="area_entered" from="WaterBG/Hook/HookArea" to="." method="_on_HookArea_area_entered"]
+[connection signal="button_down" from="ScreenView/UpButton" to="." method="_on_UpButton_button_down"]
+[connection signal="button_up" from="ScreenView/UpButton" to="." method="_on_UpButton_button_up"]
+[connection signal="button_down" from="ScreenView/DownButton" to="." method="_on_DownButton_button_down"]
+[connection signal="button_up" from="ScreenView/DownButton" to="." method="_on_DownButton_button_up"]
+[connection signal="pressed" from="ScreenView/BackButton" to="." method="_on_BackButton_pressed"]

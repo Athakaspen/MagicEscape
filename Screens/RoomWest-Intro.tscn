@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Sprites/Backgrounds/RoomWest.png" type="Texture" id=2]
+[ext_resource path="res://Sprites/Objects/OpenDoorInside.png" type="Texture" id=4]
+[ext_resource path="res://Sprites/Backgrounds/RoomWest-Home.png" type="Texture" id=6]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+func _ready():
+	Helpers.disable_input(2)
+	yield(get_tree().create_timer(1.2), 'timeout')
+	ScreenManager.do_screenflash()
+	yield(get_tree().create_timer(0.5), 'timeout')
+	
+	WorldData.house_location = 'wall'
+	WorldData.start_timer()
+	
+	ScreenManager.change_screen(\"res://Screens/RoomWest.tscn\")
+	Helpers.disable_input(6)
+	
+	Notifications.notify(\"What was that?\")
+	Notifications.notify(\"Where'd this wall come from? Am I trapped here?\", true)
+
+"
+
+[node name="Screen" type="Node2D"]
+script = SubResource( 1 )
+
+[node name="ViewHome" type="Sprite" parent="."]
+texture = ExtResource( 6 )
+centered = false
+
+[node name="BG" type="Sprite" parent="."]
+texture = ExtResource( 2 )
+centered = false
+
+[node name="OpenDoor" type="Node2D" parent="."]
+
+[node name="OpenDoorSprite" type="Sprite" parent="OpenDoor"]
+position = Vector2( 447, 627 )
+texture = ExtResource( 4 )

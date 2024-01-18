@@ -1,0 +1,345 @@
+[gd_scene load_steps=24 format=2]
+
+[ext_resource path="res://ClickableArea.gd" type="Script" id=1]
+[ext_resource path="res://Sprites/Backgrounds/RoomWest.png" type="Texture" id=2]
+[ext_resource path="res://Sprites/Backgrounds/RoomWest-bricks.png" type="Texture" id=3]
+[ext_resource path="res://Sprites/Objects/OpenDoorInside.png" type="Texture" id=4]
+[ext_resource path="res://Sprites/Objects/ClosedDoorInside.png" type="Texture" id=5]
+[ext_resource path="res://Sprites/Backgrounds/RoomWest-Home.png" type="Texture" id=6]
+[ext_resource path="res://Sprites/Backgrounds/blankwhite.png" type="Texture" id=7]
+[ext_resource path="res://Sprites/Backgrounds/RoomWest-Garden.png" type="Texture" id=8]
+[ext_resource path="res://Sprites/Backgrounds/ArcadeWest.png" type="Texture" id=9]
+[ext_resource path="res://Sprites/Objects/ArcadeMatInside.png" type="Texture" id=10]
+[ext_resource path="res://Sprites/Objects/ArcadeMatInsideStain.png" type="Texture" id=11]
+[ext_resource path="res://Collectable.gd" type="Script" id=12]
+[ext_resource path="res://Sprites/Backgrounds/RoomWest-bricks-broken.png" type="Texture" id=13]
+[ext_resource path="res://Sprites/Objects/CD-rainbow.png" type="Texture" id=14]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends Node2D
+
+#var is_door_open = false
+
+func _ready():
+	# update the views out the window and door
+	update_view()
+	
+	$OpenDoor.hide()
+	$ClosedDoor.show()
+	
+	if WorldData.in_intro:
+		WorldData.in_intro = false
+		$OpenDoor.show()
+		$ClosedDoor.hide()
+	
+	# examine wall instead of move
+	if WorldData.house_location in [\"wall\", \"red\", \"orange\", \"yellow\", \"green\", \"blue\", \"purple\"]:
+		$OpenDoor/ThruDoor.hover_cursor = \"examine\"
+	
+	# arcade mat stain
+	if WorldData.is_mat_cleaned:
+		$ViewArcade/MatClean.show()
+	else:
+		$ViewArcade/MatStain.show()
+
+func _on_Left_clicked():
+	ScreenManager.change_screen(\"res://Screens/RoomSouth.tscn\")
+
+
+func _on_Right_clicked():
+	ScreenManager.change_screen(\"res://Screens/RoomNorth.tscn\")
+
+
+func _on_Floor_clicked():
+	ScreenManager.change_screen(\"res://Screens/Rug.tscn\")
+
+
+func _on_ClosedDoor_clicked():
+#	is_door_open = true
+#	MouseHelper.set_cursor('forward')
+	$OpenDoor.show()
+	$ClosedDoor.hide()
+
+
+func _on_Window_clicked():
+	match WorldData.house_location:
+		\"home\":
+			Notifications.notify(\"It's a bright sunny day.\")
+		\"wall\":
+			Notifications.notify(\"I can't see anything through this.\")
+		\"garden\":
+			Notifications.notify(\"Those flowers must be enjoying the sunlight.\")
+		\"arcade\":
+			Notifications.notify(\"Wow, an arcade right out the front window!\")
+		_:
+			Notifications.notify(\"I'm... not sure what that is.\")
+
+
+func _on_Table_clicked():
+	ScreenManager.change_screen(\"res://Screens/Sidetable.tscn\")
+
+
+func _on_OpenDoor_clicked():
+	# close door
+#	is_door_open = false
+	$OpenDoor.hide()
+	$ClosedDoor.show()
+
+func update_view():
+	match WorldData.house_location:
+		\"home\":
+			$ViewHome.show()
+		\"wall\":
+			if !WorldData.has_broken_wall:
+				$ViewWall.show()
+			else:
+				$ViewWallBroken.show()
+				$OpenDoor/ThruDoor.hide()
+		\"garden\":
+			$ViewGarden.show()
+		\"arcade\":
+			$ViewArcade.show()
+		\"red\", \"orange\", \"yellow\", \"green\", \"blue\", \"purple\":
+			$ViewColor.modulate = Helpers.get_color_from_name(WorldData.house_location)
+			$ViewColor.show()
+
+func _on_ThruDoor_clicked():
+	match WorldData.house_location:
+		\"home\":
+			ScreenManager.change_screen(\"res://Screens/RoadAcross.tscn\")
+			WorldData.escaped = true
+			WorldData.stop_timer()
+		\"wall\":
+			if Inventory.active_item == 'sledgehammer':
+				$ViewWall.hide()
+				$ViewWallBroken.show()
+				$OpenDoor/ThruDoor.hide()
+				Inventory.remove_item(\"sledgehammer\")
+				WorldData.has_broken_wall = true
+			else:
+				Notifications.notify(\"I can't get through here.\")
+		\"garden\":
+			ScreenManager.change_screen(\"res://Screens/GardenWest.tscn\")
+		\"arcade\":
+			ScreenManager.change_screen(\"res://Screens/ArcadeWest.tscn\")
+		\"red\", \"orange\", \"yellow\", \"green\", \"blue\", \"purple\":
+			Notifications.notify(\"I don't want to touch this, whatever it is.\")
+
+
+func _on_RainbowDisk_clicked(emitter):
+	Helpers.remove_world_item(emitter)
+	Inventory.add_item('rainbow-disk')
+"
+
+[sub_resource type="RectangleShape2D" id=9]
+extents = Vector2( 31, 18 )
+
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 162, 275 )
+
+[sub_resource type="RectangleShape2D" id=8]
+extents = Vector2( 157, 550 )
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 224, 550 )
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 219.5, 550 )
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 356, 49 )
+
+[sub_resource type="RectangleShape2D" id=6]
+extents = Vector2( 144, 137 )
+
+[sub_resource type="RectangleShape2D" id=7]
+extents = Vector2( 202, 71 )
+
+[node name="Screen" type="Node2D"]
+script = SubResource( 1 )
+
+[node name="ViewHome" type="Sprite" parent="."]
+visible = false
+texture = ExtResource( 6 )
+centered = false
+
+[node name="ViewWall" type="Sprite" parent="."]
+visible = false
+texture = ExtResource( 3 )
+centered = false
+
+[node name="ViewWallBroken" type="Sprite" parent="."]
+visible = false
+texture = ExtResource( 13 )
+centered = false
+
+[node name="RainbowDisk" type="Area2D" parent="ViewWallBroken"]
+position = Vector2( 757, 804 )
+script = ExtResource( 12 )
+__meta__ = {
+"_edit_group_": true
+}
+id = "rainbow-disk"
+
+[node name="Sprite" type="Sprite" parent="ViewWallBroken/RainbowDisk"]
+texture = ExtResource( 14 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ViewWallBroken/RainbowDisk"]
+shape = SubResource( 9 )
+
+[node name="ViewGarden" type="Sprite" parent="."]
+visible = false
+texture = ExtResource( 8 )
+centered = false
+
+[node name="ViewArcade" type="Sprite" parent="."]
+visible = false
+position = Vector2( 438, 227 )
+scale = Vector2( 0.561111, 0.561111 )
+texture = ExtResource( 9 )
+centered = false
+
+[node name="MatClean" type="Sprite" parent="ViewArcade"]
+visible = false
+position = Vector2( 520.396, 1094.26 )
+scale = Vector2( 1.78218, 1.78218 )
+texture = ExtResource( 10 )
+
+[node name="MatStain" type="Sprite" parent="ViewArcade"]
+visible = false
+position = Vector2( 520.396, 1094.26 )
+scale = Vector2( 1.78218, 1.78218 )
+texture = ExtResource( 11 )
+
+[node name="ViewColor" type="Sprite" parent="."]
+visible = false
+texture = ExtResource( 7 )
+centered = false
+
+[node name="BG" type="Sprite" parent="."]
+texture = ExtResource( 2 )
+centered = false
+
+[node name="OpenDoor" type="Node2D" parent="."]
+
+[node name="OpenDoorSprite" type="Sprite" parent="OpenDoor"]
+position = Vector2( 447, 627 )
+texture = ExtResource( 4 )
+
+[node name="OpenDoor" type="Area2D" parent="OpenDoor"]
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "hand"
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="OpenDoor/OpenDoor"]
+polygon = PoolVector2Array( 524, 330, 328, 252, 327, 996, 524, 906 )
+
+[node name="ThruDoor" type="Area2D" parent="OpenDoor"]
+position = Vector2( 731, 616 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "forward"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="OpenDoor/ThruDoor"]
+shape = SubResource( 5 )
+
+[node name="LeftSmall" type="Area2D" parent="OpenDoor"]
+position = Vector2( 185, 543 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "left"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="OpenDoor/LeftSmall"]
+position = Vector2( -47, 0 )
+shape = SubResource( 8 )
+
+[node name="ClosedDoor" type="Node2D" parent="."]
+visible = false
+
+[node name="ClosedDoorSprite" type="Sprite" parent="ClosedDoor"]
+position = Vector2( 732, 613 )
+texture = ExtResource( 5 )
+
+[node name="ClosedDoor" type="Area2D" parent="ClosedDoor"]
+position = Vector2( 731, 616 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "hand"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ClosedDoor/ClosedDoor"]
+shape = SubResource( 5 )
+
+[node name="LeftBig" type="Area2D" parent="ClosedDoor"]
+position = Vector2( 185, 543 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "left"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ClosedDoor/LeftBig"]
+position = Vector2( 20, 0 )
+shape = SubResource( 2 )
+
+[node name="Right" type="Area2D" parent="."]
+position = Vector2( 1732, 543 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+hover_cursor = "right"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Right"]
+position = Vector2( -15.5, 0 )
+shape = SubResource( 3 )
+
+[node name="Floor" type="Area2D" parent="."]
+position = Vector2( 958, 1013 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+position = Vector2( -2, 40 )
+shape = SubResource( 4 )
+
+[node name="Window" type="Area2D" parent="."]
+position = Vector2( 1204, 437 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Window"]
+shape = SubResource( 6 )
+
+[node name="Table" type="Area2D" parent="."]
+position = Vector2( 1110, 691 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Table"]
+position = Vector2( 102, -29 )
+shape = SubResource( 7 )
+
+[connection signal="clicked" from="ViewWallBroken/RainbowDisk" to="." method="_on_RainbowDisk_clicked"]
+[connection signal="clicked" from="OpenDoor/OpenDoor" to="." method="_on_OpenDoor_clicked"]
+[connection signal="clicked" from="OpenDoor/ThruDoor" to="." method="_on_ThruDoor_clicked"]
+[connection signal="clicked" from="OpenDoor/LeftSmall" to="." method="_on_Left_clicked"]
+[connection signal="clicked" from="ClosedDoor/ClosedDoor" to="." method="_on_ClosedDoor_clicked"]
+[connection signal="clicked" from="ClosedDoor/LeftBig" to="." method="_on_Left_clicked"]
+[connection signal="clicked" from="Right" to="." method="_on_Right_clicked"]
+[connection signal="clicked" from="Floor" to="." method="_on_Floor_clicked"]
+[connection signal="clicked" from="Window" to="." method="_on_Window_clicked"]
+[connection signal="clicked" from="Table" to="." method="_on_Table_clicked"]
